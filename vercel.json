@@ -1,7 +1,18 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
+  "version": 2,
+  "buildCommand": "npx prisma generate && npm run build",
   "installCommand": "npm install",
   "framework": null,
-  "outputDirectory": "build/client"
+  "outputDirectory": "build/client",
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs20.x",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/build/(.*)", "destination": "/build/$1" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
 }
