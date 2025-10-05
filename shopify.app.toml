@@ -18,6 +18,11 @@ uri = "/webhooks"
 [access_scopes]
 scopes = "write_products,write_themes"
 
+[app_proxy]
+url = "https://kick-off-three.vercel.app/apps/countdown"
+subpath = "countdown"
+prefix = "apps"
+
 [auth]
 redirect_urls = [
   "https://kick-off-three.vercel.app/auth/callback",
