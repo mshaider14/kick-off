@@ -2,7 +2,7 @@
 
 client_id = "6ff92c911603e11c86bc09f163a3bae2"
 name = "kick-off"
-application_url = "https://countdown-timer-app-sage.vercel.app"
+application_url = "https://kick-off-three.vercel.app"
 embedded = true
 
 [build]
@@ -20,6 +20,6 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://countdown-timer-app-sage.vercel.app/auth/callback",
-  "https://countdown-timer-app-sage.vercel.app/api/auth"
+  "https://kick-off-three.vercel.app/auth/callback",
+  "https://kick-off-three.vercel.app/api/auth"
 ]
