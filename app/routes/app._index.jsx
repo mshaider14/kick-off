@@ -8,7 +8,6 @@ import {
   LegacyStack,
   Button,
   Toast,
-  Frame,
   ColorPicker,
   Select,
   ChoiceList,
@@ -182,7 +181,7 @@ export default function Index() {
   };
 
   return (
-    <Frame>
+    <>
       <Page>
         <TitleBar title="Countdown & Call-to-Action Bar" />
         
@@ -326,6 +325,6 @@ export default function Index() {
           />
         )}
       </Page>
-    </Frame>
+    </>
   );
 }
