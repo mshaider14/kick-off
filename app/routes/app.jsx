@@ -6,6 +6,7 @@ import { AppProvider as PolarisProvider } from "@shopify/polaris";
 import en from "@shopify/polaris/locales/en.json";
 import styles from "@shopify/polaris/build/esm/styles.css?url";
 import { useState, useEffect } from "react";
+import { AdminLayout, ErrorBoundary as ErrorBoundaryComponent } from "../components";
 
 export const links = () => [
   { rel: "stylesheet", href: styles }
@@ -14,14 +15,22 @@ export const links = () => [
 
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
 
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return { 
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    merchant: {
+      shop: session.shop,
+      email: session.email,
+      firstName: session.firstName,
+      lastName: session.lastName,
+    }
+  };
 };
 
 
 export default function App() {
-  const { apiKey } = useLoaderData();
+  const { apiKey, merchant } = useLoaderData();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -33,11 +42,17 @@ export default function App() {
       <AppProvider embedded apiKey={apiKey}>
         {mounted && (
           <s-app-nav>
-            <s-link href="/app">Home</s-link>
-            <s-link href="/app/additional">Additional page</s-link>
+            <s-link href="/app">Dashboard</s-link>
+            <s-link href="/app/bars">Bars</s-link>
+            <s-link href="/app/analytics">Analytics</s-link>
+            <s-link href="/app/settings">Settings</s-link>
           </s-app-nav>
         )}
-        <Outlet />
+        <ErrorBoundaryComponent>
+          <AdminLayout merchant={merchant}>
+            <Outlet />
+          </AdminLayout>
+        </ErrorBoundaryComponent>
       </AppProvider>
     </PolarisProvider>
   );
