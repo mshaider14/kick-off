@@ -22,6 +22,7 @@ import db from "../db.server";
 import {
   BarTypeSelection,
   ContentConfiguration,
+  CountdownConfiguration,
   DesignCustomization,
   TargetingSchedule,
   BarPreview,
@@ -41,20 +42,72 @@ function validateBarData(data, currentStep) {
   const errors = {};
 
   if (currentStep >= 2) {
-    if (!data.message || data.message.trim() === "") {
-      errors.message = "Message is required";
-    }
-    if (data.message && data.message.length > 200) {
-      errors.message = "Message must be 200 characters or less";
-    }
-    if (data.ctaText && data.ctaText.length > 50) {
-      errors.ctaText = "CTA text must be 50 characters or less";
-    }
-    if (data.ctaText && !data.ctaLink) {
-      errors.ctaLink = "Link URL is required when button text is provided";
-    }
-    if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
-      errors.ctaLink = "Link must start with / or be a valid URL";
+    // Validate countdown timer configuration
+    if (data.type === "countdown") {
+      if (!data.message || data.message.trim() === "") {
+        errors.message = "Message is required";
+      }
+      if (data.message && data.message.length > 200) {
+        errors.message = "Message must be 200 characters or less";
+      }
+      
+      // Validate timer type is selected
+      if (!data.timerType) {
+        errors.timerType = "Timer type is required";
+      }
+      
+      // Validate based on timer type
+      if (data.timerType === "fixed") {
+        if (!data.timerEndDate) {
+          errors.timerEndDate = "End date and time is required for fixed countdown";
+        } else {
+          const endDate = new Date(data.timerEndDate);
+          if (endDate <= new Date()) {
+            errors.timerEndDate = "End date must be in the future";
+          }
+        }
+      } else if (data.timerType === "daily") {
+        if (!data.timerDailyTime) {
+          errors.timerDailyTime = "Daily reset time is required";
+        }
+      } else if (data.timerType === "evergreen") {
+        if (!data.timerDuration || parseInt(data.timerDuration) <= 0) {
+          errors.timerDuration = "Duration must be greater than 0 minutes";
+        }
+      }
+      
+      // Validate end message if show_message is selected
+      if (data.timerEndAction === "show_message" && !data.timerEndMessage) {
+        errors.timerEndMessage = "End message is required when showing a custom message";
+      }
+      
+      // Validate CTA if provided
+      if (data.ctaText && data.ctaText.length > 50) {
+        errors.ctaText = "CTA text must be 50 characters or less";
+      }
+      if (data.ctaText && !data.ctaLink) {
+        errors.ctaLink = "Link URL is required when button text is provided";
+      }
+      if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
+        errors.ctaLink = "Link must start with / or be a valid URL";
+      }
+    } else {
+      // Regular announcement bar validation
+      if (!data.message || data.message.trim() === "") {
+        errors.message = "Message is required";
+      }
+      if (data.message && data.message.length > 200) {
+        errors.message = "Message must be 200 characters or less";
+      }
+      if (data.ctaText && data.ctaText.length > 50) {
+        errors.ctaText = "CTA text must be 50 characters or less";
+      }
+      if (data.ctaText && !data.ctaLink) {
+        errors.ctaLink = "Link URL is required when button text is provided";
+      }
+      if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
+        errors.ctaLink = "Link must start with / or be a valid URL";
+      }
     }
   }
 
@@ -103,6 +156,13 @@ export const action = async ({ request }) => {
       isActive: actionType === "publish",
       startDate: formData.get("startDate") ? new Date(formData.get("startDate")) : null,
       endDate: formData.get("endDate") ? new Date(formData.get("endDate")) : null,
+      timerType: formData.get("timerType") || null,
+      timerEndDate: formData.get("timerEndDate") ? new Date(formData.get("timerEndDate")) : null,
+      timerDailyTime: formData.get("timerDailyTime") || null,
+      timerDuration: formData.get("timerDuration") ? parseInt(formData.get("timerDuration"), 10) : null,
+      timerFormat: formData.get("timerFormat") || null,
+      timerEndAction: formData.get("timerEndAction") || null,
+      timerEndMessage: formData.get("timerEndMessage") || null,
     };
 
     // Validate
@@ -153,6 +213,13 @@ export default function NewBarPage() {
     position: "top",
     startDate: "",
     endDate: "",
+    timerType: "fixed",
+    timerEndDate: "",
+    timerDailyTime: "",
+    timerDuration: "",
+    timerFormat: JSON.stringify({ showDays: true, showHours: true, showMinutes: true, showSeconds: true }),
+    timerEndAction: "hide",
+    timerEndMessage: "",
   });
 
   const steps = [
@@ -218,6 +285,16 @@ export default function NewBarPage() {
       if (formData.endDate) {
         formDataToSubmit.append("endDate", formData.endDate);
       }
+      // Countdown timer fields
+      if (formData.type === "countdown") {
+        formDataToSubmit.append("timerType", formData.timerType || "");
+        formDataToSubmit.append("timerEndDate", formData.timerEndDate || "");
+        formDataToSubmit.append("timerDailyTime", formData.timerDailyTime || "");
+        formDataToSubmit.append("timerDuration", formData.timerDuration || "");
+        formDataToSubmit.append("timerFormat", formData.timerFormat || "");
+        formDataToSubmit.append("timerEndAction", formData.timerEndAction || "");
+        formDataToSubmit.append("timerEndMessage", formData.timerEndMessage || "");
+      }
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
@@ -233,6 +310,15 @@ export default function NewBarPage() {
           />
         );
       case 2:
+        // Show countdown configuration for countdown bars, regular content for others
+        if (formData.type === "countdown") {
+          return (
+            <CountdownConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+          );
+        }
         return (
           <ContentConfiguration
             formData={formData}
