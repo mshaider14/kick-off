@@ -169,7 +169,7 @@ export default function NewBarPage() {
       setShowToast(true);
       // Redirect to bars list after a short delay
       setTimeout(() => {
-        navigate("/app/bars");
+        navigate("/app");
       }, 2000);
     } else if (actionData?.error || actionData?.errors) {
       const errorMsg = actionData.error || Object.values(actionData.errors).join(", ");
