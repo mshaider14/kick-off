@@ -48,6 +48,16 @@ model Bar {
   isActive        Boolean  @default(false)
   startDate       DateTime?
   endDate         DateTime?
+
+  // Countdown timer fields
+  timerType       String?  // "fixed", "daily", "evergreen"
+  timerEndDate    DateTime? // For fixed timer
+  timerDailyTime  String?  // For daily recurring (HH:MM format)
+  timerDuration   Int?     // For evergreen timer (minutes)
+  timerFormat     String?  // JSON: {"showDays": true, "showHours": true, "showMinutes": true, "showSeconds": true}
+  timerEndAction  String?  // "hide" or "show_message"
+  timerEndMessage String?  // Custom message when timer ends
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   

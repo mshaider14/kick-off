@@ -1,15 +1,35 @@
 <div id="countdown-cta-bar" 
-     class="countdown-bar countdown-bar--top"
+     class="countdown-bar"
      data-shop="{{ shop.permanent_domain }}"
      style="display: none;">
 
   <div class="countdown-bar__container">
     <div class="countdown-bar__content">
-      <span class="countdown-bar__message">Loading...</span>
+      <span class="countdown-bar__message"></span>
 
-      <a href="#" class="countdown-bar__button" id="cta-button" style="display: none;">
-        Shop Now
-      </a>
+      <div class="countdown-bar__timer" id="countdown-timer">
+        <span class="countdown-bar__time-unit" id="days-container">
+          <span class="countdown-bar__time-value" id="days">00</span>
+          <span class="countdown-bar__time-label">Days</span>
+        </span>
+        <span class="countdown-bar__separator">:</span>
+        <span class="countdown-bar__time-unit" id="hours-container">
+          <span class="countdown-bar__time-value" id="hours">00</span>
+          <span class="countdown-bar__time-label">Hours</span>
+        </span>
+        <span class="countdown-bar__separator">:</span>
+        <span class="countdown-bar__time-unit" id="mins-container">
+          <span class="countdown-bar__time-value" id="minutes">00</span>
+          <span class="countdown-bar__time-label">Mins</span>
+        </span>
+        <span class="countdown-bar__separator">:</span>
+        <span class="countdown-bar__time-unit" id="secs-container">
+          <span class="countdown-bar__time-value" id="seconds">00</span>
+          <span class="countdown-bar__time-label">Secs</span>
+        </span>
+      </div>
+
+      <a href="#" class="countdown-bar__button" id="cta-button" style="display: none;"></a>
     </div>
 
     <button class="countdown-bar__close" id="close-bar" aria-label="Close">
@@ -25,7 +45,6 @@
   "name": "Countdown & CTA Bar",
   "target": "body",
   "stylesheet": "countdown-bar.css",
-  "javascript": "countdown-bar.js",
-  "settings": []
+  "javascript": "countdown-bar.js"
 }
 {% endschema %}
