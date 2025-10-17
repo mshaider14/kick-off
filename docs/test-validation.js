@@ -5,6 +5,10 @@
  * 
  * This script tests the validation logic used in the bar creation feature.
  * Run with: node docs/test-validation.js
+ * 
+ * Note: This is a standalone test file that duplicates the validation logic
+ * from app/routes/api.bars.jsx for testing purposes. In a production app,
+ * consider extracting validation logic into a shared utility module.
  */
 
 // Simulate the validation function from api.bars.jsx
@@ -180,8 +184,8 @@ const tests = [
       message: "Test",
       backgroundColor: "#288d40",
       textColor: "#ffffff",
-      startDate: "2024-12-31T00:00:00Z",
-      endDate: "2024-01-01T00:00:00Z",
+      startDate: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+      endDate: new Date(Date.now()).toISOString(), // Today
     },
     shouldPass: false,
   },

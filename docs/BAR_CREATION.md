@@ -173,24 +173,29 @@ model Bar {
 
 ### API Testing
 
-Test POST endpoint:
+**Note:** The API endpoints require Shopify app authentication. These examples are for reference only. In practice, you would test these through the Shopify admin interface or using tools like Postman with proper authentication setup.
+
+Test POST endpoint (conceptual example):
 ```bash
-curl -X POST /api/bars \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "Test Bar",
-    "type": "announcement",
-    "backgroundColor": "#288d40",
-    "textColor": "#ffffff",
-    "fontSize": 14,
-    "position": "top",
-    "isActive": true
-  }'
+# This requires authentication headers - use through Shopify admin or authenticated tools
+POST /api/bars
+Content-Type: application/json
+
+{
+  "message": "Test Bar",
+  "type": "announcement",
+  "backgroundColor": "#288d40",
+  "textColor": "#ffffff",
+  "fontSize": 14,
+  "position": "top",
+  "isActive": true
+}
 ```
 
-Test GET endpoint:
+Test GET endpoint (conceptual example):
 ```bash
-curl /api/bars
+# This requires authentication headers - use through Shopify admin or authenticated tools
+GET /api/bars
 ```
 
 ## Future Enhancements
