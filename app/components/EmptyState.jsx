@@ -1,16 +1,17 @@
+// No changes to imports
 import { EmptyState as PolarisEmptyState } from "@shopify/polaris";
 import PropTypes from "prop-types";
 
 export default function EmptyState({ 
   heading = "Get started with your first countdown bar",
   children,
-  action,
+  action, // This prop now supports { content, url, onAction }
   image = "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
 }) {
   return (
     <PolarisEmptyState
       heading={heading}
-      action={action}
+      action={action} // Polaris EmptyState handles this automatically
       image={image}
     >
       {children || (
@@ -26,6 +27,11 @@ export default function EmptyState({
 EmptyState.propTypes = {
   heading: PropTypes.string,
   children: PropTypes.node,
-  action: PropTypes.object,
+  // Update the shape of the action prop
+  action: PropTypes.shape({
+    content: PropTypes.string.isRequired,
+    url: PropTypes.string,
+    onAction: PropTypes.func,
+  }),
   image: PropTypes.string,
 };

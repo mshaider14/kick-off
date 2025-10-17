@@ -1,7 +1,9 @@
+
 import { Page, Layout, Card, Text, Button } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router-dom"; 
+//import { useLoaderData } from "react-router";
 import { EmptyState } from "../components";
 import db from "../db.server";
 
@@ -30,6 +32,7 @@ export const loader = async ({ request }) => {
 
 export default function BarsPage() {
   const { hasBars } = useLoaderData();
+  const navigate = useNavigate(); // <-- Add this line
 
   return (
     <Page>
@@ -41,7 +44,7 @@ export default function BarsPage() {
               heading="Create your first countdown bar"
               action={{
                 content: "Create countdown bar",
-                url: "/app",
+                onAction: () => navigate("/app"), // <-- Updated for consistency
               }}
             >
               <p>
@@ -59,7 +62,8 @@ export default function BarsPage() {
                   You have configured countdown bars. Visit the dashboard to manage them.
                 </Text>
                 <div style={{ marginTop: "1rem" }}>
-                  <Button url="/app">Go to Dashboard</Button>
+                   {/* V V V THE FIX IS HERE V V V */}
+                  <Button onClick={() => navigate("/app")}>Go to Dashboard</Button>
                 </div>
               </div>
             </Card>

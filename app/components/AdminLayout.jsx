@@ -2,7 +2,6 @@ import { Frame } from "@shopify/polaris";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import TopNavigation from "./TopNavigation";
-import SidebarNavigation from "./SidebarNavigation";
 
 export default function AdminLayout({ children, merchant }) {
   const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
@@ -19,7 +18,6 @@ export default function AdminLayout({ children, merchant }) {
           onNavigationToggle={toggleMobileNavigationActive}
         />
       }
-      navigation={<SidebarNavigation />}
       showMobileNavigation={mobileNavigationActive}
       onNavigationDismiss={toggleMobileNavigationActive}
     >
