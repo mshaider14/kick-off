@@ -55,6 +55,8 @@ export function BarPreview({ formData }) {
               overflow: "hidden",
               marginTop: "12px",
             }}
+            role="region"
+            aria-label="Bar preview"
           >
             <div style={barStyle}>
               <span>{message}</span>

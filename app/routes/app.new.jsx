@@ -10,7 +10,13 @@ import {
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useActionData, useNavigation } from "react-router";
+import {
+  useActionData,
+  useNavigation,
+  useNavigate,
+  useSubmit,
+  Form,
+} from "react-router-dom";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import {
@@ -25,6 +31,11 @@ function json(data, init) {
   return Response.json(data, init);
 }
 
+export const loader = async ({ request }) => {
+  await authenticate.admin(request);
+  return json({}); // We don't need to load data, just authenticate
+};
+
 // Validation function
 function validateBarData(data, currentStep) {
   const errors = {};
@@ -33,8 +44,17 @@ function validateBarData(data, currentStep) {
     if (!data.message || data.message.trim() === "") {
       errors.message = "Message is required";
     }
+    if (data.message && data.message.length > 200) {
+      errors.message = "Message must be 200 characters or less";
+    }
+    if (data.ctaText && data.ctaText.length > 50) {
+      errors.ctaText = "CTA text must be 50 characters or less";
+    }
     if (data.ctaText && !data.ctaLink) {
       errors.ctaLink = "Link URL is required when button text is provided";
+    }
+    if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
+      errors.ctaLink = "Link must start with / or be a valid URL";
     }
   }
 
@@ -47,6 +67,16 @@ function validateBarData(data, currentStep) {
     }
     if (!data.fontSize || data.fontSize < 10 || data.fontSize > 24) {
       errors.fontSize = "Font size must be between 10 and 24";
+    }
+  }
+
+  if (currentStep >= 4) {
+    if (data.startDate && data.endDate) {
+      const start = new Date(data.startDate);
+      const end = new Date(data.endDate);
+      if (end <= start) {
+        errors.endDate = "End date must be after start date";
+      }
     }
   }
 
@@ -105,6 +135,7 @@ export default function NewBarPage() {
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const submit = useSubmit();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [showToast, setShowToast] = useState(false);
@@ -171,15 +202,25 @@ export default function NewBarPage() {
 
   const handleSubmit = useCallback(
     (actionType) => {
-      const form = document.getElementById("barForm");
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "actionType";
-      input.value = actionType;
-      form.appendChild(input);
-      form.submit();
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append("type", formData.type);
+      formDataToSubmit.append("message", formData.message);
+      formDataToSubmit.append("ctaText", formData.ctaText || "");
+      formDataToSubmit.append("ctaLink", formData.ctaLink || "");
+      formDataToSubmit.append("backgroundColor", formData.backgroundColor);
+      formDataToSubmit.append("textColor", formData.textColor);
+      formDataToSubmit.append("fontSize", formData.fontSize.toString());
+      formDataToSubmit.append("position", formData.position);
+      formDataToSubmit.append("actionType", actionType);
+      if (formData.startDate) {
+        formDataToSubmit.append("startDate", formData.startDate);
+      }
+      if (formData.endDate) {
+        formDataToSubmit.append("endDate", formData.endDate);
+      }
+      submit(formDataToSubmit, { method: "post" });
     },
-    []
+    [formData, submit]
   );
 
   const renderStep = () => {
@@ -265,19 +306,7 @@ export default function NewBarPage() {
           </Card>
 
           {/* Form Step Content */}
-          <form id="barForm" method="post" style={{ marginTop: "16px" }}>
-            {/* Hidden inputs to pass all form data */}
-            <input type="hidden" name="type" value={formData.type} />
-            <input type="hidden" name="message" value={formData.message} />
-            <input type="hidden" name="ctaText" value={formData.ctaText} />
-            <input type="hidden" name="ctaLink" value={formData.ctaLink} />
-            <input type="hidden" name="backgroundColor" value={formData.backgroundColor} />
-            <input type="hidden" name="textColor" value={formData.textColor} />
-            <input type="hidden" name="fontSize" value={formData.fontSize} />
-            <input type="hidden" name="position" value={formData.position} />
-            <input type="hidden" name="startDate" value={formData.startDate} />
-            <input type="hidden" name="endDate" value={formData.endDate} />
-
+          <Form method="post" style={{ marginTop: "16px" }}>
             {renderStep()}
 
             {/* Navigation Buttons */}
@@ -314,7 +343,7 @@ export default function NewBarPage() {
                 </LegacyStack>
               </LegacyStack>
             </Card>
-          </form>
+          </Form>
         </Layout.Section>
 
         <Layout.Section variant="oneThird">
