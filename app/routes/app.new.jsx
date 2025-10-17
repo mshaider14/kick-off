@@ -22,6 +22,7 @@ import db from "../db.server";
 import {
   BarTypeSelection,
   ContentConfiguration,
+  CountdownConfiguration,
   DesignCustomization,
   TargetingSchedule,
   BarPreview,
@@ -103,6 +104,13 @@ export const action = async ({ request }) => {
       isActive: actionType === "publish",
       startDate: formData.get("startDate") ? new Date(formData.get("startDate")) : null,
       endDate: formData.get("endDate") ? new Date(formData.get("endDate")) : null,
+      timerType: formData.get("timerType") || null,
+      timerEndDate: formData.get("timerEndDate") ? new Date(formData.get("timerEndDate")) : null,
+      timerDailyTime: formData.get("timerDailyTime") || null,
+      timerDuration: formData.get("timerDuration") ? parseInt(formData.get("timerDuration"), 10) : null,
+      timerFormat: formData.get("timerFormat") || null,
+      timerEndAction: formData.get("timerEndAction") || null,
+      timerEndMessage: formData.get("timerEndMessage") || null,
     };
 
     // Validate
@@ -153,6 +161,13 @@ export default function NewBarPage() {
     position: "top",
     startDate: "",
     endDate: "",
+    timerType: "fixed",
+    timerEndDate: "",
+    timerDailyTime: "",
+    timerDuration: "",
+    timerFormat: JSON.stringify({ showDays: true, showHours: true, showMinutes: true, showSeconds: true }),
+    timerEndAction: "hide",
+    timerEndMessage: "",
   });
 
   const steps = [
@@ -218,6 +233,16 @@ export default function NewBarPage() {
       if (formData.endDate) {
         formDataToSubmit.append("endDate", formData.endDate);
       }
+      // Countdown timer fields
+      if (formData.type === "countdown") {
+        formDataToSubmit.append("timerType", formData.timerType || "");
+        formDataToSubmit.append("timerEndDate", formData.timerEndDate || "");
+        formDataToSubmit.append("timerDailyTime", formData.timerDailyTime || "");
+        formDataToSubmit.append("timerDuration", formData.timerDuration || "");
+        formDataToSubmit.append("timerFormat", formData.timerFormat || "");
+        formDataToSubmit.append("timerEndAction", formData.timerEndAction || "");
+        formDataToSubmit.append("timerEndMessage", formData.timerEndMessage || "");
+      }
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
@@ -233,6 +258,15 @@ export default function NewBarPage() {
           />
         );
       case 2:
+        // Show countdown configuration for countdown bars, regular content for others
+        if (formData.type === "countdown") {
+          return (
+            <CountdownConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+          );
+        }
         return (
           <ContentConfiguration
             formData={formData}

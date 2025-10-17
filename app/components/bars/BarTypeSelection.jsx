@@ -35,14 +35,13 @@ export function BarTypeSelection({ value, onChange }) {
           </Card>
 
           <Card>
-            <div style={{ padding: "16px", opacity: 0.5 }}>
+            <div style={{ padding: "16px" }}>
               <RadioButton
-                label="Countdown Timer (Coming Soon)"
+                label="Countdown Timer"
                 helpText="Create urgency with a countdown timer for sales and promotions"
                 checked={selectedType === "countdown"}
                 id="countdown"
                 name="barType"
-                disabled
                 onChange={() => handleChange("countdown")}
               />
             </div>
