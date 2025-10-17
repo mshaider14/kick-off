@@ -42,20 +42,72 @@ function validateBarData(data, currentStep) {
   const errors = {};
 
   if (currentStep >= 2) {
-    if (!data.message || data.message.trim() === "") {
-      errors.message = "Message is required";
-    }
-    if (data.message && data.message.length > 200) {
-      errors.message = "Message must be 200 characters or less";
-    }
-    if (data.ctaText && data.ctaText.length > 50) {
-      errors.ctaText = "CTA text must be 50 characters or less";
-    }
-    if (data.ctaText && !data.ctaLink) {
-      errors.ctaLink = "Link URL is required when button text is provided";
-    }
-    if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
-      errors.ctaLink = "Link must start with / or be a valid URL";
+    // Validate countdown timer configuration
+    if (data.type === "countdown") {
+      if (!data.message || data.message.trim() === "") {
+        errors.message = "Message is required";
+      }
+      if (data.message && data.message.length > 200) {
+        errors.message = "Message must be 200 characters or less";
+      }
+      
+      // Validate timer type is selected
+      if (!data.timerType) {
+        errors.timerType = "Timer type is required";
+      }
+      
+      // Validate based on timer type
+      if (data.timerType === "fixed") {
+        if (!data.timerEndDate) {
+          errors.timerEndDate = "End date and time is required for fixed countdown";
+        } else {
+          const endDate = new Date(data.timerEndDate);
+          if (endDate <= new Date()) {
+            errors.timerEndDate = "End date must be in the future";
+          }
+        }
+      } else if (data.timerType === "daily") {
+        if (!data.timerDailyTime) {
+          errors.timerDailyTime = "Daily reset time is required";
+        }
+      } else if (data.timerType === "evergreen") {
+        if (!data.timerDuration || parseInt(data.timerDuration) <= 0) {
+          errors.timerDuration = "Duration must be greater than 0 minutes";
+        }
+      }
+      
+      // Validate end message if show_message is selected
+      if (data.timerEndAction === "show_message" && !data.timerEndMessage) {
+        errors.timerEndMessage = "End message is required when showing a custom message";
+      }
+      
+      // Validate CTA if provided
+      if (data.ctaText && data.ctaText.length > 50) {
+        errors.ctaText = "CTA text must be 50 characters or less";
+      }
+      if (data.ctaText && !data.ctaLink) {
+        errors.ctaLink = "Link URL is required when button text is provided";
+      }
+      if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
+        errors.ctaLink = "Link must start with / or be a valid URL";
+      }
+    } else {
+      // Regular announcement bar validation
+      if (!data.message || data.message.trim() === "") {
+        errors.message = "Message is required";
+      }
+      if (data.message && data.message.length > 200) {
+        errors.message = "Message must be 200 characters or less";
+      }
+      if (data.ctaText && data.ctaText.length > 50) {
+        errors.ctaText = "CTA text must be 50 characters or less";
+      }
+      if (data.ctaText && !data.ctaLink) {
+        errors.ctaLink = "Link URL is required when button text is provided";
+      }
+      if (data.ctaLink && !data.ctaLink.match(/^(\/|https?:\/\/)/)) {
+        errors.ctaLink = "Link must start with / or be a valid URL";
+      }
     }
   }
 
