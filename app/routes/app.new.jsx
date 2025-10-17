@@ -260,7 +260,7 @@ export default function NewBarPage() {
 
   return (
     <Page
-      backAction={{ content: "Bars", onAction: () => navigate("/app/bars") }}
+      backAction={{ content: "Bars", onAction: () => navigate("/app") }}
       title="Create New Bar"
       titleMetadata={
         <Text variant="bodyMd" as="span" color="subdued">
