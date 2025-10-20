@@ -24,6 +24,53 @@
     bar.style.color = settings.textColor || '#ffffff';
     bar.className = `countdown-bar countdown-bar--${settings.barPosition || 'top'}`;
 
+    // Apply advanced design settings
+    if (settings.fontFamily) {
+      bar.style.fontFamily = settings.fontFamily;
+    }
+    if (settings.fontWeight) {
+      const fontWeightMap = { 'normal': '400', 'medium': '500', 'bold': '700' };
+      bar.style.fontWeight = fontWeightMap[settings.fontWeight] || settings.fontWeight;
+    }
+    if (settings.textAlign) {
+      bar.style.textAlign = settings.textAlign;
+    }
+    if (settings.fontSize) {
+      bar.style.fontSize = `${settings.fontSize}px`;
+    }
+    // Apply padding
+    if (settings.paddingTop !== undefined) {
+      bar.style.paddingTop = `${settings.paddingTop}px`;
+    }
+    if (settings.paddingBottom !== undefined) {
+      bar.style.paddingBottom = `${settings.paddingBottom}px`;
+    }
+    if (settings.paddingLeft !== undefined) {
+      bar.style.paddingLeft = `${settings.paddingLeft}px`;
+    }
+    if (settings.paddingRight !== undefined) {
+      bar.style.paddingRight = `${settings.paddingRight}px`;
+    }
+    // Apply border
+    if (settings.borderWidth && settings.borderWidth > 0) {
+      bar.style.borderWidth = `${settings.borderWidth}px`;
+      bar.style.borderStyle = 'solid';
+      bar.style.borderColor = settings.borderColor || '#e5e7eb';
+    }
+    if (settings.borderRadius !== undefined) {
+      bar.style.borderRadius = `${settings.borderRadius}px`;
+    }
+    // Apply shadow
+    if (settings.shadowStyle) {
+      const shadowMap = {
+        'none': 'none',
+        'subtle': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'medium': '0 4px 12px rgba(0, 0, 0, 0.15)',
+        'strong': '0 10px 25px rgba(0, 0, 0, 0.25)'
+      };
+      bar.style.boxShadow = shadowMap[settings.shadowStyle] || shadowMap.medium;
+    }
+
     const messageEl = bar.querySelector('.countdown-bar__message');
     if (messageEl) {
       messageEl.textContent = settings.barMessage || '';
@@ -38,8 +85,12 @@
       if (settings.buttonText && settings.buttonLink) {
         buttonEl.textContent = settings.buttonText;
         buttonEl.href = settings.buttonLink;
-        buttonEl.style.backgroundColor = settings.textColor || '#ffffff';
-        buttonEl.style.color = settings.barColor || '#000000';
+        // Apply custom button styling if provided
+        buttonEl.style.backgroundColor = settings.buttonBgColor || settings.textColor || '#ffffff';
+        buttonEl.style.color = settings.buttonTextColor || settings.barColor || '#000000';
+        if (settings.buttonBorder) {
+          buttonEl.style.border = `${settings.buttonBorder} ${settings.buttonTextColor || settings.barColor || '#000000'}`;
+        }
         buttonEl.style.display = 'block';
       } else {
         buttonEl.style.display = 'none';
@@ -217,6 +268,53 @@
     shippingBar.style.backgroundColor = settings.barColor || '#288d40';
     shippingBar.style.color = settings.textColor || '#ffffff';
     shippingBar.className = `free-shipping-bar free-shipping-bar--${settings.barPosition || 'top'}`;
+
+    // Apply advanced design settings to shipping bar
+    if (settings.fontFamily) {
+      shippingBar.style.fontFamily = settings.fontFamily;
+    }
+    if (settings.fontWeight) {
+      const fontWeightMap = { 'normal': '400', 'medium': '500', 'bold': '700' };
+      shippingBar.style.fontWeight = fontWeightMap[settings.fontWeight] || settings.fontWeight;
+    }
+    if (settings.textAlign) {
+      shippingBar.style.textAlign = settings.textAlign;
+    }
+    if (settings.fontSize) {
+      shippingBar.style.fontSize = `${settings.fontSize}px`;
+    }
+    // Apply padding
+    if (settings.paddingTop !== undefined) {
+      shippingBar.style.paddingTop = `${settings.paddingTop}px`;
+    }
+    if (settings.paddingBottom !== undefined) {
+      shippingBar.style.paddingBottom = `${settings.paddingBottom}px`;
+    }
+    if (settings.paddingLeft !== undefined) {
+      shippingBar.style.paddingLeft = `${settings.paddingLeft}px`;
+    }
+    if (settings.paddingRight !== undefined) {
+      shippingBar.style.paddingRight = `${settings.paddingRight}px`;
+    }
+    // Apply border
+    if (settings.borderWidth && settings.borderWidth > 0) {
+      shippingBar.style.borderWidth = `${settings.borderWidth}px`;
+      shippingBar.style.borderStyle = 'solid';
+      shippingBar.style.borderColor = settings.borderColor || '#e5e7eb';
+    }
+    if (settings.borderRadius !== undefined) {
+      shippingBar.style.borderRadius = `${settings.borderRadius}px`;
+    }
+    // Apply shadow
+    if (settings.shadowStyle) {
+      const shadowMap = {
+        'none': 'none',
+        'subtle': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'medium': '0 4px 12px rgba(0, 0, 0, 0.15)',
+        'strong': '0 10px 25px rgba(0, 0, 0, 0.25)'
+      };
+      shippingBar.style.boxShadow = shadowMap[settings.shadowStyle] || shadowMap.medium;
+    }
 
     const iconEl = document.getElementById('shipping-icon');
     if (iconEl) {

@@ -82,6 +82,22 @@ export const loader = async ({ request }) => {
       barColor: bar.backgroundColor,
       textColor: bar.textColor,
       barPosition: bar.position,
+      // Advanced design settings
+      fontFamily: bar.fontFamily,
+      fontWeight: bar.fontWeight,
+      textAlign: bar.textAlign,
+      fontSize: bar.fontSize,
+      paddingTop: bar.paddingTop,
+      paddingBottom: bar.paddingBottom,
+      paddingLeft: bar.paddingLeft,
+      paddingRight: bar.paddingRight,
+      borderColor: bar.borderColor,
+      borderWidth: bar.borderWidth,
+      borderRadius: bar.borderRadius,
+      buttonBgColor: bar.buttonBgColor,
+      buttonTextColor: bar.buttonTextColor,
+      buttonBorder: bar.buttonBorder,
+      shadowStyle: bar.shadowStyle,
       // Conditionally add timer settings ONLY if it's a countdown bar
       ...(bar.type === "countdown" && {
         timerType: bar.timerType,

@@ -1,0 +1,15 @@
+-- AlterTable
+ALTER TABLE "Bar" ADD COLUMN     "fontFamily" TEXT DEFAULT 'system-ui, -apple-system, sans-serif',
+ADD COLUMN     "fontWeight" TEXT DEFAULT 'normal',
+ADD COLUMN     "textAlign" TEXT DEFAULT 'center',
+ADD COLUMN     "paddingTop" INTEGER DEFAULT 12,
+ADD COLUMN     "paddingBottom" INTEGER DEFAULT 12,
+ADD COLUMN     "paddingLeft" INTEGER DEFAULT 20,
+ADD COLUMN     "paddingRight" INTEGER DEFAULT 20,
+ADD COLUMN     "borderColor" TEXT,
+ADD COLUMN     "borderWidth" INTEGER DEFAULT 0,
+ADD COLUMN     "borderRadius" INTEGER DEFAULT 0,
+ADD COLUMN     "buttonBgColor" TEXT,
+ADD COLUMN     "buttonTextColor" TEXT,
+ADD COLUMN     "buttonBorder" TEXT,
+ADD COLUMN     "shadowStyle" TEXT;

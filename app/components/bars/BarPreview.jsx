@@ -22,6 +22,21 @@ export function BarPreview({ formData }) {
     shippingReachedText = "You've unlocked free shipping! 🎉",
     shippingProgressColor = "#4ade80",
     shippingShowIcon = true,
+    // New design fields
+    fontFamily = "system-ui, -apple-system, sans-serif",
+    fontWeight = "normal",
+    textAlign = "center",
+    paddingTop = 12,
+    paddingBottom = 12,
+    paddingLeft = 20,
+    paddingRight = 20,
+    borderColor,
+    borderWidth = 0,
+    borderRadius = 0,
+    buttonBgColor,
+    buttonTextColor,
+    buttonBorder,
+    shadowStyle = "none",
   } = formData;
 
   const [countdownValues, setCountdownValues] = useState({
@@ -117,27 +132,58 @@ export function BarPreview({ formData }) {
     return () => clearInterval(interval);
   }, [type, timerType, timerEndDate, timerDailyTime, timerDuration]);
 
+  // Helper to get shadow style
+  const getShadowStyle = (style) => {
+    switch (style) {
+      case "subtle":
+        return "0 1px 3px rgba(0, 0, 0, 0.1)";
+      case "medium":
+        return "0 4px 12px rgba(0, 0, 0, 0.15)";
+      case "strong":
+        return "0 10px 25px rgba(0, 0, 0, 0.25)";
+      default:
+        return "none";
+    }
+  };
+
+  // Helper to get font weight value
+  const getFontWeight = (weight) => {
+    switch (weight) {
+      case "normal":
+        return "400";
+      case "medium":
+        return "500";
+      case "bold":
+        return "700";
+      default:
+        return "400";
+    }
+  };
+
   const barStyle = {
     backgroundColor,
     color: textColor,
-    padding: "12px 20px",
+    padding: `${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
     fontSize: `${fontSize}px`,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: textAlign === "left" ? "flex-start" : textAlign === "right" ? "flex-end" : "center",
     gap: "20px",
     minHeight: "56px",
     flexWrap: "wrap",
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
-    fontWeight: "500",
+    fontFamily: fontFamily,
+    fontWeight: getFontWeight(fontWeight),
     lineHeight: "1.4",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    textAlign: textAlign,
+    border: borderWidth > 0 && borderColor ? `${borderWidth}px solid ${borderColor}` : "none",
+    borderRadius: `${borderRadius}px`,
+    boxShadow: getShadowStyle(shadowStyle),
   };
 
   const buttonStyle = {
-    backgroundColor: textColor,
-    color: backgroundColor,
-    border: "none",
+    backgroundColor: buttonBgColor || textColor,
+    color: buttonTextColor || backgroundColor,
+    border: buttonBorder ? `${buttonBorder} ${buttonTextColor || backgroundColor}` : "none",
     padding: "10px 24px",
     borderRadius: "6px",
     fontSize: `${fontSize - 1}px`,
@@ -347,5 +393,19 @@ BarPreview.propTypes = {
     shippingReachedText: PropTypes.string,
     shippingProgressColor: PropTypes.string,
     shippingShowIcon: PropTypes.bool,
+    fontFamily: PropTypes.string,
+    fontWeight: PropTypes.string,
+    textAlign: PropTypes.string,
+    paddingTop: PropTypes.number,
+    paddingBottom: PropTypes.number,
+    paddingLeft: PropTypes.number,
+    paddingRight: PropTypes.number,
+    borderColor: PropTypes.string,
+    borderWidth: PropTypes.number,
+    borderRadius: PropTypes.number,
+    buttonBgColor: PropTypes.string,
+    buttonTextColor: PropTypes.string,
+    buttonBorder: PropTypes.string,
+    shadowStyle: PropTypes.string,
   }).isRequired,
 };

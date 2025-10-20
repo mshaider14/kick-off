@@ -315,6 +315,21 @@ export const action = async ({ request }) => {
       shippingReachedText: formData.get("shippingReachedText") || null,
       shippingProgressColor: formData.get("shippingProgressColor") || null,
       shippingShowIcon: formData.get("shippingShowIcon") === "true",
+      // Advanced design fields
+      fontFamily: formData.get("fontFamily") || "system-ui, -apple-system, sans-serif",
+      fontWeight: formData.get("fontWeight") || "normal",
+      textAlign: formData.get("textAlign") || "center",
+      paddingTop: formData.get("paddingTop") ? parseInt(formData.get("paddingTop"), 10) : 12,
+      paddingBottom: formData.get("paddingBottom") ? parseInt(formData.get("paddingBottom"), 10) : 12,
+      paddingLeft: formData.get("paddingLeft") ? parseInt(formData.get("paddingLeft"), 10) : 20,
+      paddingRight: formData.get("paddingRight") ? parseInt(formData.get("paddingRight"), 10) : 20,
+      borderColor: formData.get("borderColor") || null,
+      borderWidth: formData.get("borderWidth") ? parseInt(formData.get("borderWidth"), 10) : 0,
+      borderRadius: formData.get("borderRadius") ? parseInt(formData.get("borderRadius"), 10) : 0,
+      buttonBgColor: formData.get("buttonBgColor") || null,
+      buttonTextColor: formData.get("buttonTextColor") || null,
+      buttonBorder: formData.get("buttonBorder") || null,
+      shadowStyle: formData.get("shadowStyle") || "none",
     };
 
     // Validate
@@ -389,6 +404,21 @@ export default function NewBarPage() {
     shippingReachedText: "You've unlocked free shipping! 🎉",
     shippingProgressColor: "#4ade80",
     shippingShowIcon: true,
+    // Advanced design fields
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontWeight: "normal",
+    textAlign: "center",
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderColor: null,
+    borderWidth: 0,
+    borderRadius: 0,
+    buttonBgColor: null,
+    buttonTextColor: null,
+    buttonBorder: null,
+    shadowStyle: "none",
   });
 
   const steps = [
@@ -518,6 +548,29 @@ export default function NewBarPage() {
         formDataToSubmit.append("shippingProgressColor", formData.shippingProgressColor || "#4ade80");
         formDataToSubmit.append("shippingShowIcon", formData.shippingShowIcon ? "true" : "false");
       }
+      // Advanced design fields
+      formDataToSubmit.append("fontFamily", formData.fontFamily || "system-ui, -apple-system, sans-serif");
+      formDataToSubmit.append("fontWeight", formData.fontWeight || "normal");
+      formDataToSubmit.append("textAlign", formData.textAlign || "center");
+      formDataToSubmit.append("paddingTop", formData.paddingTop?.toString() || "12");
+      formDataToSubmit.append("paddingBottom", formData.paddingBottom?.toString() || "12");
+      formDataToSubmit.append("paddingLeft", formData.paddingLeft?.toString() || "20");
+      formDataToSubmit.append("paddingRight", formData.paddingRight?.toString() || "20");
+      if (formData.borderColor) {
+        formDataToSubmit.append("borderColor", formData.borderColor);
+      }
+      formDataToSubmit.append("borderWidth", formData.borderWidth?.toString() || "0");
+      formDataToSubmit.append("borderRadius", formData.borderRadius?.toString() || "0");
+      if (formData.buttonBgColor) {
+        formDataToSubmit.append("buttonBgColor", formData.buttonBgColor);
+      }
+      if (formData.buttonTextColor) {
+        formDataToSubmit.append("buttonTextColor", formData.buttonTextColor);
+      }
+      if (formData.buttonBorder) {
+        formDataToSubmit.append("buttonBorder", formData.buttonBorder);
+      }
+      formDataToSubmit.append("shadowStyle", formData.shadowStyle || "none");
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
