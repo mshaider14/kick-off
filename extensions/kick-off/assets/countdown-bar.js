@@ -1,6 +1,8 @@
 (function() {
   'use strict';
 
+  function trackEvent() {}
+
   const bar = document.getElementById('countdown-cta-bar');
   if (!bar) return;
 
@@ -14,6 +16,10 @@
 
   // Applies styles and content common to ALL bar types.
   function applyCommonSettings(settings) {
+    // Hide all bar containers initially, the specific handler will show the correct one
+    document.getElementById('countdown-cta-bar').style.display = 'none';
+    document.getElementById('free-shipping-bar').style.display = 'none';
+    
     bar.style.backgroundColor = settings.barColor || '#288d40';
     bar.style.color = settings.textColor || '#ffffff';
     bar.className = `countdown-bar countdown-bar--${settings.barPosition || 'top'}`;
@@ -46,6 +52,29 @@
     const timerEl = document.getElementById('countdown-timer');
     if (timerEl) timerEl.style.display = 'none'; // Hide the timer section.
     bar.style.display = 'flex';
+  }
+
+  // --- Logic specifically for FREE SHIPPING bars ---
+  // Get cart total from Shopify
+  async function getct() {
+    try {
+      const response = await fetch('/cart.js');
+      const cart = await response.json();
+      return cart.total_price / 100; // Shopify returns price in cents
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      return 0;
+    }
+  }
+
+  function getcuSymbol(c) {
+    const s = {USD:"$",EUR:"€",GBP:"£",CAD:"CA$",AUD:"A$",JPY:"¥",NZD:"NZ$",INR:"₹",SGD:"S$",HKD:"HK$"};
+    return s[c] || "$";
+  }
+
+  // Format amount with cu
+  function formatAmount(a, c) {
+    return `${getcuSymbol(c)}${a.toFixed(2)}`;
   }
 
   // --- Logic specifically for COUNTDOWN bars ---
@@ -130,6 +159,108 @@
     bar.style.display = 'flex';
   }
 
+  // --- Logic specifically for FREE SHIPPING bars ---
+  const shippingBar = document.getElementById('free-shipping-bar');
+
+  // Update progress bar based on cart value
+  async function updateShippingProgress(settings) {
+    if (!settings || settings.type !== 'shipping') return;
+
+    const ct = await getct();
+    const th = parseFloat(settings.shippingth) || 50;
+    const cu = settings.shippingcu || 'USD';
+    
+    const pp = Math.min((ct / th) * 100, 100);
+    const remaining = Math.max(th - ct, 0);
+    const isSuccess = ct >= th;
+
+    const messageEl = document.getElementById('shipping-message');
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+
+    if (messageEl) {
+      if (isSuccess) {
+        messageEl.textContent = settings.shippingReachedText || "You've unlocked free shipping! 🎉";
+        messageEl.classList.add('success');
+      } else {
+        const message = (settings.shippingGoalText || "Add {amount} more for free shipping!")
+          .replace('{amount}', formatAmount(remaining, cu));
+        messageEl.textContent = message;
+        messageEl.classList.remove('success');
+      }
+    }
+
+    if (progressFill) {
+      progressFill.style.width = `${pp}%`;
+      if (isSuccess) {
+        progressFill.classList.add('success');
+      } else {
+        progressFill.classList.remove('success');
+      }
+    }
+
+    if (progressText) {
+      if (isSuccess) {
+        progressText.style.display = 'none';
+      } else {
+        progressText.style.display = 'block';
+        progressText.textContent = `${formatAmount(ct, cu)} / ${formatAmount(th, cu)}`;
+      }
+    }
+  }
+
+  // Handle bar initialization for shipping bar
+  function handleFreeShippingBar(settings) {
+    if (!shippingBar) return;
+
+    // Apply settings specific to shipping bar
+    shippingBar.style.backgroundColor = settings.barColor || '#288d40';
+    shippingBar.style.color = settings.textColor || '#ffffff';
+    shippingBar.className = `free-shipping-bar free-shipping-bar--${settings.barPosition || 'top'}`;
+
+    const iconEl = document.getElementById('shipping-icon');
+    if (iconEl) {
+      iconEl.style.display = settings.shippingShowIcon ? 'inline' : 'none';
+    }
+
+    const progressFill = document.getElementById('progress-fill');
+    if (progressFill && settings.shippingProgressColor) {
+      progressFill.style.backgroundColor = settings.shippingProgressColor;
+    }
+
+    updateShippingProgress(settings);
+    shippingBar.style.display = 'flex';
+
+    // Listen for cart updates (Shopify theme events)
+    const setupCartListeners = () => {
+      document.addEventListener('cart:updated', () => updateShippingProgress(settings));
+      const of = window.fetch;
+      window.fetch = function(...a) {
+        const u = a[0];
+        if (typeof u === 'string' && (u.includes('/cart') || u.includes('cart.js'))) {
+          return of.apply(this, a).then(r => {
+            r.clone().json().then(() => setTimeout(() => updateShippingProgress(settings), 100)).catch(() => {});
+            return r;
+          });
+        }
+        return of.apply(this, a);
+      };
+    };
+    setupCartListeners();
+
+    // Setup close button
+    const closeBtn = document.getElementById('close-shipping-bar');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        // Track bar close
+        trackEvent('bar_closed', settings);
+        
+        shippingBar.style.display = 'none';
+        sessionStorage.setItem(getSessionKey(settings.id), 'true');
+      });
+    }
+  }
+
   function handleCountdownEnd(settings) {
     const timerEl = document.getElementById('countdown-timer');
     const messageEl = bar.querySelector('.countdown-bar__message');
@@ -144,13 +275,8 @@
   // --- Main execution starts here ---
   const proxyBase = '/apps/countdown';
   
-  // Add retry logic for better reliability
-  let retryCount = 0;
-  const maxRetries = 3;
-  
-  function fetchBarSettings() {
-    fetch(`${proxyBase}/settings?shop=${encodeURIComponent(shop)}`)
-      .then(response => {
+  fetch(`${proxyBase}/settings?shop=${encodeURIComponent(shop)}`)
+    .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -177,40 +303,20 @@
       if (settings.type === 'countdown') {
         console.log("Handling as: Countdown Bar");
         handleCountdownBar(settings);
+      } else if (settings.type === 'shipping') {
+        console.log("Handling as: Free Shipping Bar");
+        handleFreeShippingBar(settings);
       } else {
         console.log("Handling as: Announcement Bar");
         handleAnnouncementBar(settings);
       }
 
       // Track bar impression (placeholder for analytics)
-      try {
-        if (typeof window.dataLayer !== 'undefined') {
-          window.dataLayer.push({
-            'event': 'bar_impression',
-            'bar_type': settings.type,
-            'bar_id': settings.id,
-            'bar_position': settings.barPosition
-          });
-        }
-      } catch (e) {
-        // Silent fail for analytics
-      }
+      trackEvent('bar_impression', settings);
 
       const closeBtn = document.getElementById('close-bar');
       if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-          // Track bar close (placeholder for analytics)
-          try {
-            if (typeof window.dataLayer !== 'undefined') {
-              window.dataLayer.push({
-                'event': 'bar_closed',
-                'bar_type': settings.type,
-                'bar_id': settings.id
-              });
-            }
-          } catch (e) {
-            // Silent fail
-          }
           
           bar.style.display = 'none';
           sessionStorage.setItem(sessionKey, 'true');
@@ -222,34 +328,8 @@
       const ctaButton = document.getElementById('cta-button');
       if (ctaButton && ctaButton.href && ctaButton.href !== '#') {
         ctaButton.addEventListener('click', () => {
-          try {
-            if (typeof window.dataLayer !== 'undefined') {
-              window.dataLayer.push({
-                'event': 'bar_cta_click',
-                'bar_type': settings.type,
-                'bar_id': settings.id,
-                'cta_link': ctaButton.href
-              });
-            }
-          } catch (e) {
-            // Silent fail
-          }
+          trackEvent('bar_cta_click', settings, { 'cta_link': ctaButton.href });
         });
       }
-    })
-    .catch(error => {
-        console.error('Bar fetch error:', error);
-        if (retryCount < maxRetries) {
-          retryCount++;
-          console.log(`Retrying... (${retryCount}/${maxRetries})`);
-          setTimeout(fetchBarSettings, 1000 * retryCount); // Exponential backoff
-        } else {
-          console.error('Max retries reached. Hiding bar.');
-          bar.style.display = 'none';
-        }
-      });
-  }
-  
-  // Start initial fetch
-  fetchBarSettings();
+    }).catch(() => bar.style.display = 'none');
 })();
