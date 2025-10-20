@@ -610,7 +610,11 @@ export default function NewBarPage() {
                           {template.name}
                         </Text>
                         <Text variant="bodySm" as="p" color="subdued">
-                          {template.message.substring(0, 30)}...
+                          {template.message 
+                            ? template.message.substring(0, 30) + "..." 
+                            : template.shippingGoalText 
+                            ? template.shippingGoalText.substring(0, 30) + "..."
+                            : "Free shipping progress bar"}
                         </Text>
                       </button>
                     ))}
