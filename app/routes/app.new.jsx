@@ -23,6 +23,7 @@ import {
   BarTypeSelection,
   ContentConfiguration,
   CountdownConfiguration,
+  FreeShippingConfiguration,
   DesignCustomization,
   TargetingSchedule,
   BarPreview,
@@ -100,6 +101,22 @@ function validateBarData(data, currentStep) {
         if (!data.timerEndMessage || data.timerEndMessage.trim() === "") {
           errors.timerEndMessage = "Custom end message is required when 'Show message' is selected";
         }
+      }
+    } else if (data.type === "shipping") {
+      // Rule for Free Shipping Bars: Threshold and messages are required
+      if (!data.shippingThreshold || parseFloat(data.shippingThreshold) <= 0) {
+        errors.shippingThreshold = "Free shipping threshold must be greater than 0";
+      }
+      if (!data.shippingGoalText || data.shippingGoalText.trim() === "") {
+        errors.shippingGoalText = "Goal message is required for free shipping bars";
+      } else if (!data.shippingGoalText.includes("{amount}")) {
+        errors.shippingGoalText = "Goal message must include {amount} placeholder";
+      }
+      if (!data.shippingReachedText || data.shippingReachedText.trim() === "") {
+        errors.shippingReachedText = "Success message is required for free shipping bars";
+      }
+      if (!data.shippingCurrency || data.shippingCurrency.trim() === "") {
+        errors.shippingCurrency = "Currency is required for free shipping bars";
       }
     }
   }
@@ -208,6 +225,41 @@ const BAR_TEMPLATES = {
       timerEndMessage: "Offer expired - Check back soon!",
     },
   ],
+  shipping: [
+    {
+      name: "Standard Free Shipping",
+      shippingThreshold: 50,
+      shippingCurrency: "USD",
+      shippingGoalText: "Add {amount} more for free shipping!",
+      shippingReachedText: "You've unlocked free shipping! 🎉",
+      backgroundColor: "#0066cc",
+      textColor: "#ffffff",
+      shippingProgressColor: "#4ade80",
+      shippingShowIcon: true,
+    },
+    {
+      name: "Premium Threshold",
+      shippingThreshold: 75,
+      shippingCurrency: "USD",
+      shippingGoalText: "Spend {amount} more to unlock FREE shipping! 🚚",
+      shippingReachedText: "Congrats! You earned free shipping! 🎊",
+      backgroundColor: "#6b46c1",
+      textColor: "#ffffff",
+      shippingProgressColor: "#fbbf24",
+      shippingShowIcon: true,
+    },
+    {
+      name: "Minimal Theme",
+      shippingThreshold: 35,
+      shippingCurrency: "USD",
+      shippingGoalText: "{amount} away from free delivery",
+      shippingReachedText: "Free shipping unlocked ✓",
+      backgroundColor: "#1f2937",
+      textColor: "#ffffff",
+      shippingProgressColor: "#10b981",
+      shippingShowIcon: false,
+    },
+  ],
 };
 
 // Helper function for contrast validation
@@ -246,6 +298,12 @@ export const action = async ({ request }) => {
       timerFormat: formData.get("timerFormat") || null,
       timerEndAction: formData.get("timerEndAction") || null,
       timerEndMessage: formData.get("timerEndMessage") || null,
+      shippingThreshold: formData.get("shippingThreshold") ? parseFloat(formData.get("shippingThreshold")) : null,
+      shippingCurrency: formData.get("shippingCurrency") || null,
+      shippingGoalText: formData.get("shippingGoalText") || null,
+      shippingReachedText: formData.get("shippingReachedText") || null,
+      shippingProgressColor: formData.get("shippingProgressColor") || null,
+      shippingShowIcon: formData.get("shippingShowIcon") === "true",
     };
 
     // Validate
@@ -314,6 +372,12 @@ export default function NewBarPage() {
     timerFormat: JSON.stringify({ showDays: true, showHours: true, showMinutes: true, showSeconds: true }),
     timerEndAction: "hide",
     timerEndMessage: "",
+    shippingThreshold: 50,
+    shippingCurrency: "USD",
+    shippingGoalText: "Add {amount} more for free shipping!",
+    shippingReachedText: "You've unlocked free shipping! 🎉",
+    shippingProgressColor: "#4ade80",
+    shippingShowIcon: true,
   });
 
   const steps = [
@@ -434,6 +498,15 @@ export default function NewBarPage() {
         formDataToSubmit.append("timerEndAction", formData.timerEndAction || "");
         formDataToSubmit.append("timerEndMessage", formData.timerEndMessage || "");
       }
+      // Free shipping fields
+      if (formData.type === "shipping") {
+        formDataToSubmit.append("shippingThreshold", formData.shippingThreshold || "");
+        formDataToSubmit.append("shippingCurrency", formData.shippingCurrency || "USD");
+        formDataToSubmit.append("shippingGoalText", formData.shippingGoalText || "");
+        formDataToSubmit.append("shippingReachedText", formData.shippingReachedText || "");
+        formDataToSubmit.append("shippingProgressColor", formData.shippingProgressColor || "#4ade80");
+        formDataToSubmit.append("shippingShowIcon", formData.shippingShowIcon ? "true" : "false");
+      }
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
@@ -552,10 +625,17 @@ export default function NewBarPage() {
           </>
         );
       case 2:
-        // Show countdown configuration for countdown bars, regular content for others
+        // Show appropriate configuration based on bar type
         if (formData.type === "countdown") {
           return (
             <CountdownConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+          );
+        } else if (formData.type === "shipping") {
+          return (
+            <FreeShippingConfiguration
               formData={formData}
               onChange={setFormData}
             />

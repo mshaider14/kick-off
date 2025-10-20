@@ -118,9 +118,13 @@ export default function BarsPage() {
   const rows = bars.map((bar) => [
     <div key={`name-${bar.id}`} style={{ maxWidth: "300px" }}>
       <Text variant="bodyMd" as="p" fontWeight="semibold">
-        {bar.type === "countdown" ? "Countdown Timer" : (bar.message || "Untitled Bar")}
+        {bar.type === "countdown" 
+          ? "Countdown Timer" 
+          : bar.type === "shipping" 
+          ? "Free Shipping Bar" 
+          : (bar.message || "Untitled Bar")}
       </Text>
-      {bar.type === "countdown" && bar.message && (
+      {(bar.type === "countdown" || bar.type === "shipping") && bar.message && (
         <Text variant="bodySm" as="p" color="subdued" truncate>
           {bar.message}
         </Text>
@@ -128,7 +132,7 @@ export default function BarsPage() {
     </div>,
     <div key={`type-${bar.id}`} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
       <span style={{ fontSize: "16px" }}>
-        {bar.type === "countdown" ? "⏱️" : "📢"}
+        {bar.type === "countdown" ? "⏱️" : bar.type === "shipping" ? "🚚" : "📢"}
       </span>
       <Text variant="bodyMd" as="span">
         {bar.type.charAt(0).toUpperCase() + bar.type.slice(1)}

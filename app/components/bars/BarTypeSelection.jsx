@@ -48,14 +48,13 @@ export function BarTypeSelection({ value, onChange }) {
           </Card>
 
           <Card>
-            <div style={{ padding: "16px", opacity: 0.5 }}>
+            <div style={{ padding: "16px" }}>
               <RadioButton
-                label="Free Shipping Bar (Coming Soon)"
-                helpText="Show a progress bar for free shipping threshold"
+                label="Free Shipping Progress Bar"
+                helpText="Show a progress bar for free shipping threshold with dynamic cart value tracking"
                 checked={selectedType === "shipping"}
                 id="shipping"
                 name="barType"
-                disabled
                 onChange={() => handleChange("shipping")}
               />
             </div>

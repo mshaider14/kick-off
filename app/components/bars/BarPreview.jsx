@@ -16,6 +16,12 @@ export function BarPreview({ formData }) {
     timerDailyTime,
     timerDuration,
     timerFormat,
+    shippingThreshold = 50,
+    shippingCurrency = "USD",
+    shippingGoalText = "Add {amount} more for free shipping!",
+    shippingReachedText = "You've unlocked free shipping! 🎉",
+    shippingProgressColor = "#4ade80",
+    shippingShowIcon = true,
   } = formData;
 
   const [countdownValues, setCountdownValues] = useState({
@@ -24,6 +30,10 @@ export function BarPreview({ formData }) {
     minutes: "00",
     seconds: "00",
   });
+
+  // Free shipping preview state - simulate cart values
+  const [previewCartValue, setPreviewCartValue] = useState(25); // Default to 50% of threshold
+  const [showSuccessState, setShowSuccessState] = useState(false);
 
   // Parse timer format
   let format = { showDays: true, showHours: true, showMinutes: true, showSeconds: true };
@@ -34,6 +44,29 @@ export function BarPreview({ formData }) {
       // Use defaults
     }
   }
+
+  // Update preview cart value for free shipping bars
+  useEffect(() => {
+    if (type !== "shipping") return;
+
+    const interval = setInterval(() => {
+      setPreviewCartValue((prev) => {
+        // Cycle through different cart values for preview
+        const threshold = parseFloat(shippingThreshold) || 50;
+        const nextValue = prev + threshold * 0.15; // Increment by 15% of threshold
+        if (nextValue >= threshold * 1.2) {
+          setShowSuccessState(false);
+          return threshold * 0.3; // Reset to 30%
+        }
+        if (nextValue >= threshold && !showSuccessState) {
+          setShowSuccessState(true);
+        }
+        return nextValue;
+      });
+    }, 3000); // Update every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [type, shippingThreshold, showSuccessState]);
 
   // Update countdown for preview
   useEffect(() => {
@@ -139,6 +172,29 @@ export function BarPreview({ formData }) {
     opacity: 0.8,
   };
 
+  // Free shipping bar calculations
+  const threshold = parseFloat(shippingThreshold) || 50;
+  const cartValue = showSuccessState ? threshold : Math.min(previewCartValue, threshold);
+  const progressPercentage = Math.min((cartValue / threshold) * 100, 100);
+  const remaining = Math.max(threshold - cartValue, 0);
+  
+  const getCurrencySymbol = (currency) => {
+    const symbols = {
+      USD: "$", EUR: "€", GBP: "£", CAD: "CA$", AUD: "A$",
+      JPY: "¥", NZD: "NZ$", INR: "₹", SGD: "S$", HKD: "HK$"
+    };
+    return symbols[currency] || "$";
+  };
+
+  const formatAmount = (amount, currency) => {
+    const symbol = getCurrencySymbol(currency);
+    return `${symbol}${amount.toFixed(2)}`;
+  };
+
+  const shippingMessage = showSuccessState 
+    ? shippingReachedText 
+    : shippingGoalText.replace("{amount}", formatAmount(remaining, shippingCurrency));
+
 
   return (
     <Card>
@@ -162,53 +218,107 @@ export function BarPreview({ formData }) {
             aria-label="Bar preview"
           >
             <div style={barStyle}>
-              <span>{message}</span>
-
-              {type === "countdown" && (
-                <div style={timerStyle}>
-                  {format.showDays && (
-                    <>
-                      <div style={timeUnitStyle}>
-                        <span style={timeValueStyle}>{countdownValues.days}</span>
-                        <span style={timeLabelStyle}>Days</span>
-                      </div>
-                      <span>:</span>
-                    </>
-                  )}
-                  {format.showHours && (
-                    <>
-                      <div style={timeUnitStyle}>
-                        <span style={timeValueStyle}>{countdownValues.hours}</span>
-                        <span style={timeLabelStyle}>Hours</span>
-                      </div>
-                      <span>:</span>
-                    </>
-                  )}
-                  {format.showMinutes && (
-                    <>
-                      <div style={timeUnitStyle}>
-                        <span style={timeValueStyle}>{countdownValues.minutes}</span>
-                        <span style={timeLabelStyle}>Mins</span>
-                      </div>
-                      <span>:</span>
-                    </>
-                  )}
-                  {format.showSeconds && (
-                    <div style={timeUnitStyle}>
-                      <span style={timeValueStyle}>{countdownValues.seconds}</span>
-                      <span style={timeLabelStyle}>Secs</span>
+              {type === "shipping" ? (
+                // Free Shipping Progress Bar
+                <div style={{ width: "100%", maxWidth: "600px" }}>
+                  <div style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "12px",
+                    marginBottom: "8px"
+                  }}>
+                    {shippingShowIcon && (
+                      <span style={{ fontSize: "20px" }}>🚚</span>
+                    )}
+                    <span style={{ 
+                      fontWeight: showSuccessState ? "700" : "600",
+                      flex: 1
+                    }}>
+                      {shippingMessage}
+                    </span>
+                  </div>
+                  <div style={{
+                    width: "100%",
+                    height: "12px",
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    position: "relative"
+                  }}>
+                    <div style={{
+                      width: `${progressPercentage}%`,
+                      height: "100%",
+                      backgroundColor: shippingProgressColor,
+                      borderRadius: "6px",
+                      transition: "width 0.5s ease-out",
+                      boxShadow: showSuccessState ? "0 0 10px rgba(74, 222, 128, 0.5)" : "none"
+                    }} />
+                  </div>
+                  {!showSuccessState && (
+                    <div style={{ 
+                      marginTop: "6px", 
+                      fontSize: `${fontSize - 2}px`,
+                      opacity: 0.9,
+                      textAlign: "center"
+                    }}>
+                      {formatAmount(cartValue, shippingCurrency)} / {formatAmount(threshold, shippingCurrency)}
                     </div>
                   )}
                 </div>
-              )}
+              ) : (
+                // Announcement or Countdown Bar
+                <>
+                  <span>{message}</span>
 
-              {ctaText && <button style={buttonStyle}>{ctaText}</button>}
+                  {type === "countdown" && (
+                    <div style={timerStyle}>
+                      {format.showDays && (
+                        <>
+                          <div style={timeUnitStyle}>
+                            <span style={timeValueStyle}>{countdownValues.days}</span>
+                            <span style={timeLabelStyle}>Days</span>
+                          </div>
+                          <span>:</span>
+                        </>
+                      )}
+                      {format.showHours && (
+                        <>
+                          <div style={timeUnitStyle}>
+                            <span style={timeValueStyle}>{countdownValues.hours}</span>
+                            <span style={timeLabelStyle}>Hours</span>
+                          </div>
+                          <span>:</span>
+                        </>
+                      )}
+                      {format.showMinutes && (
+                        <>
+                          <div style={timeUnitStyle}>
+                            <span style={timeValueStyle}>{countdownValues.minutes}</span>
+                            <span style={timeLabelStyle}>Mins</span>
+                          </div>
+                          <span>:</span>
+                        </>
+                      )}
+                      {format.showSeconds && (
+                        <div style={timeUnitStyle}>
+                          <span style={timeValueStyle}>{countdownValues.seconds}</span>
+                          <span style={timeLabelStyle}>Secs</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {ctaText && <button style={buttonStyle}>{ctaText}</button>}
+                </>
+              )}
             </div>
           </div>
 
           <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f9fafb", borderRadius: "6px" }}>
             <Text variant="bodySm" as="p" color="subdued">
-              💡 <strong>Preview Tip:</strong> This is how your bar will appear on your storefront. Colors, text, and spacing will match this preview exactly.
+              💡 <strong>Preview Tip:</strong> {type === "shipping" 
+                ? "The progress bar animates through different cart values. In production, it will sync with the actual cart value." 
+                : "This is how your bar will appear on your storefront. Colors, text, and spacing will match this preview exactly."}
             </Text>
           </div>
         </LegacyStack>
@@ -231,5 +341,11 @@ BarPreview.propTypes = {
     timerDailyTime: PropTypes.string,
     timerDuration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     timerFormat: PropTypes.string,
+    shippingThreshold: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    shippingCurrency: PropTypes.string,
+    shippingGoalText: PropTypes.string,
+    shippingReachedText: PropTypes.string,
+    shippingProgressColor: PropTypes.string,
+    shippingShowIcon: PropTypes.bool,
   }).isRequired,
 };

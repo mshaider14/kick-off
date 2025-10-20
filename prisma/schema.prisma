@@ -58,6 +58,14 @@ model Bar {
   timerEndAction  String?  // "hide" or "show_message"
   timerEndMessage String?  // Custom message when timer ends
   
+  // Free shipping bar fields
+  shippingThreshold     Float?   // Free shipping threshold amount
+  shippingCurrency      String?  // Currency code (USD, EUR, etc.)
+  shippingGoalText      String?  // Message shown before threshold: "Add {amount} more for free shipping!"
+  shippingReachedText   String?  // Message shown after threshold: "You've unlocked free shipping!"
+  shippingProgressColor String?  // Color for progress bar fill
+  shippingShowIcon      Boolean  @default(true) // Show shipping truck icon
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
