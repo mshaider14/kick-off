@@ -60,6 +60,18 @@ export const loader = async ({ request }) => {
       }
     }
 
+    // Validate free shipping data for production
+    if (bar.type === "shipping") {
+      if (!bar.shippingThreshold || bar.shippingThreshold <= 0) {
+        console.error(`Bar ${bar.id} has invalid shipping threshold`);
+        return json({ success: false, message: "Invalid shipping threshold." });
+      }
+      if (!bar.shippingGoalText || !bar.shippingReachedText) {
+        console.error(`Bar ${bar.id} has missing shipping messages`);
+        return json({ success: false, message: "Invalid shipping configuration." });
+      }
+    }
+
     // Format the settings to be sent to the storefront.
     const settings = {
       id: bar.id,
@@ -79,6 +91,15 @@ export const loader = async ({ request }) => {
         timerFormat: bar.timerFormat ? JSON.parse(bar.timerFormat) : {},
         timerEndAction: bar.timerEndAction,
         timerEndMessage: bar.timerEndMessage,
+      }),
+      // Conditionally add shipping settings ONLY if it's a shipping bar
+      ...(bar.type === "shipping" && {
+        shippingThreshold: bar.shippingThreshold,
+        shippingCurrency: bar.shippingCurrency || "USD",
+        shippingGoalText: bar.shippingGoalText,
+        shippingReachedText: bar.shippingReachedText,
+        shippingProgressColor: bar.shippingProgressColor || "#4ade80",
+        shippingShowIcon: bar.shippingShowIcon !== false,
       }),
     };
 

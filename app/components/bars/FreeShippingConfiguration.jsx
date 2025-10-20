@@ -35,8 +35,8 @@ export function FreeShippingConfiguration({ formData, onChange }) {
 
         <Banner status="info">
           <p>
-            The progress bar will dynamically update based on the customer's cart value. 
-            When they reach your threshold, they'll see the success message!
+            The progress bar will dynamically update based on the customer&apos;s cart value. 
+            When they reach your threshold, they&apos;ll see the success message!
           </p>
         </Banner>
 

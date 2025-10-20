@@ -1,0 +1,38 @@
+<div id="free-shipping-bar" 
+     class="free-shipping-bar"
+     data-shop="{{ shop.permanent_domain }}"
+     style="display: none;">
+
+  <div class="free-shipping-bar__container">
+    <div class="free-shipping-bar__content">
+      <div class="free-shipping-bar__wrapper">
+        <div class="free-shipping-bar__header">
+          <span class="free-shipping-bar__icon" id="shipping-icon">🚚</span>
+          <span class="free-shipping-bar__message" id="shipping-message"></span>
+        </div>
+        
+        <div class="free-shipping-bar__progress-container">
+          <div class="free-shipping-bar__progress-track">
+            <div class="free-shipping-bar__progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="free-shipping-bar__progress-text" id="progress-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="free-shipping-bar__close" id="close-shipping-bar" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Free Shipping Bar",
+  "target": "body",
+  "stylesheet": "free-shipping-bar.css",
+  "javascript": "free-shipping-bar.js"
+}
+{% endschema %}
