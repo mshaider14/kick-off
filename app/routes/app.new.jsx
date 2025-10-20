@@ -271,6 +271,17 @@ function getColorBrightness(hex) {
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 
+// Helper function to get template description
+function getTemplateDescription(template) {
+  if (template.message) {
+    return template.message.substring(0, 30) + "...";
+  }
+  if (template.shippingGoalText) {
+    return template.shippingGoalText.substring(0, 30) + "...";
+  }
+  return "Free shipping progress bar";
+}
+
 export const action = async ({ request }) => {
   try {
     const { session } = await authenticate.admin(request);
@@ -610,11 +621,7 @@ export default function NewBarPage() {
                           {template.name}
                         </Text>
                         <Text variant="bodySm" as="p" color="subdued">
-                          {template.message 
-                            ? template.message.substring(0, 30) + "..." 
-                            : template.shippingGoalText 
-                            ? template.shippingGoalText.substring(0, 30) + "..."
-                            : "Free shipping progress bar"}
+                          {getTemplateDescription(template)}
                         </Text>
                       </button>
                     ))}
