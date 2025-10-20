@@ -9,6 +9,27 @@ import {
 } from "@shopify/polaris";
 import PropTypes from "prop-types";
 
+// Professional color presets
+const COLOR_PRESETS = {
+  backgrounds: [
+    { name: "Success Green", color: "#288d40" },
+    { name: "Ocean Blue", color: "#0066cc" },
+    { name: "Urgent Red", color: "#d72c0d" },
+    { name: "Warning Orange", color: "#ff8c00" },
+    { name: "Royal Purple", color: "#6b46c1" },
+    { name: "Professional Navy", color: "#1e3a8a" },
+    { name: "Elegant Black", color: "#1a1a1a" },
+    { name: "Soft Pink", color: "#ec4899" },
+  ],
+  text: [
+    { name: "Pure White", color: "#ffffff" },
+    { name: "Soft White", color: "#f9fafb" },
+    { name: "Light Gray", color: "#e5e7eb" },
+    { name: "Dark Gray", color: "#374151" },
+    { name: "Deep Black", color: "#000000" },
+  ],
+};
+
 // Color conversion helpers
 function hexToHsb(hex) {
   if (!hex) hex = "#000000";
@@ -116,9 +137,43 @@ export function DesignCustomization({ formData, onChange }) {
 
         <FormLayout>
           <div>
-            <Text variant="bodyMd" as="p" fontWeight="semibold">
-              Background Color
-            </Text>
+            <LegacyStack distribution="equalSpacing" alignment="center">
+              <Text variant="bodyMd" as="p" fontWeight="semibold">
+                Background Color
+              </Text>
+              <Text variant="bodySm" as="p" color="subdued">
+                {formData.backgroundColor || "#288d40"}
+              </Text>
+            </LegacyStack>
+            
+            {/* Color Presets */}
+            <div style={{ marginTop: "12px", marginBottom: "12px" }}>
+              <Text variant="bodySm" as="p" color="subdued" style={{ marginBottom: "8px" }}>
+                Quick Presets:
+              </Text>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {COLOR_PRESETS.backgrounds.map((preset) => (
+                  <button
+                    key={preset.color}
+                    type="button"
+                    onClick={() => handleFieldChange("backgroundColor")(preset.color)}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "6px",
+                      backgroundColor: preset.color,
+                      border: formData.backgroundColor === preset.color ? "3px solid #008060" : "2px solid #e5e7eb",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      boxShadow: formData.backgroundColor === preset.color ? "0 0 0 3px rgba(0, 128, 96, 0.1)" : "none",
+                    }}
+                    title={preset.name}
+                    aria-label={`Set background to ${preset.name}`}
+                  />
+                ))}
+              </div>
+            </div>
+            
             <div style={{ marginTop: "8px" }}>
               <ColorPicker
                 onChange={handleColorChange("backgroundColor")}
@@ -145,9 +200,43 @@ export function DesignCustomization({ formData, onChange }) {
           </div>
 
           <div>
-            <Text variant="bodyMd" as="p" fontWeight="semibold">
-              Text Color
-            </Text>
+            <LegacyStack distribution="equalSpacing" alignment="center">
+              <Text variant="bodyMd" as="p" fontWeight="semibold">
+                Text Color
+              </Text>
+              <Text variant="bodySm" as="p" color="subdued">
+                {formData.textColor || "#ffffff"}
+              </Text>
+            </LegacyStack>
+            
+            {/* Color Presets */}
+            <div style={{ marginTop: "12px", marginBottom: "12px" }}>
+              <Text variant="bodySm" as="p" color="subdued" style={{ marginBottom: "8px" }}>
+                Quick Presets:
+              </Text>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {COLOR_PRESETS.text.map((preset) => (
+                  <button
+                    key={preset.color}
+                    type="button"
+                    onClick={() => handleFieldChange("textColor")(preset.color)}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "6px",
+                      backgroundColor: preset.color,
+                      border: formData.textColor === preset.color ? "3px solid #008060" : "2px solid #e5e7eb",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      boxShadow: formData.textColor === preset.color ? "0 0 0 3px rgba(0, 128, 96, 0.1)" : "none",
+                    }}
+                    title={preset.name}
+                    aria-label={`Set text to ${preset.name}`}
+                  />
+                ))}
+              </div>
+            </div>
+            
             <div style={{ marginTop: "8px" }}>
               <ColorPicker
                 onChange={handleColorChange("textColor")}

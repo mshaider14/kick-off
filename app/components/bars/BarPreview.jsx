@@ -89,25 +89,30 @@ export function BarPreview({ formData }) {
     color: textColor,
     padding: "12px 20px",
     fontSize: `${fontSize}px`,
-    textAlign: "center",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "16px",
-    minHeight: "50px",
+    gap: "20px",
+    minHeight: "56px",
     flexWrap: "wrap",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+    fontWeight: "500",
+    lineHeight: "1.4",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   };
 
   const buttonStyle = {
     backgroundColor: textColor,
     color: backgroundColor,
     border: "none",
-    padding: "8px 16px",
-    borderRadius: "4px",
-    fontSize: `${fontSize - 2}px`,
+    padding: "10px 24px",
+    borderRadius: "6px",
+    fontSize: `${fontSize - 1}px`,
     fontWeight: "600",
     cursor: "pointer",
     whiteSpace: "nowrap",
+    transition: "all 0.2s ease",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   };
 
   const timerStyle = {
@@ -123,8 +128,10 @@ export function BarPreview({ formData }) {
   };
 
   const timeValueStyle = {
-    fontSize: `${fontSize + 4}px`,
-    fontWeight: "bold",
+    fontSize: `${fontSize + 6}px`,
+    fontWeight: "700",
+    fontVariantNumeric: "tabular-nums",
+    lineHeight: "1",
   };
 
   const timeLabelStyle = {
@@ -199,9 +206,11 @@ export function BarPreview({ formData }) {
             </div>
           </div>
 
-          <Text variant="bodySm" as="p" color="subdued" style={{ marginTop: "8px" }}>
-            This is how your bar will appear on your storefront.
-          </Text>
+          <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f9fafb", borderRadius: "6px" }}>
+            <Text variant="bodySm" as="p" color="subdued">
+              💡 <strong>Preview Tip:</strong> This is how your bar will appear on your storefront. Colors, text, and spacing will match this preview exactly.
+            </Text>
+          </div>
         </LegacyStack>
       </div>
     </Card>

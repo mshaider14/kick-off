@@ -15,11 +15,21 @@ export default function EmptyState({
       image={image}
     >
       {children || (
-        <p>
-          Create urgency and drive sales with customizable countdown timers on your store.
-          Get started by configuring your first countdown bar.
-        </p>
-      )}
+        <>
+          <p>
+            Create urgency and boost conversions with professional announcement bars and countdown timers.
+          </p>
+          <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f9fafb", borderRadius: "6px", textAlign: "left" }}>
+            <p style={{ margin: "0 0 8px 0", fontWeight: "600" }}>✨ What you can create:</p>
+            <ul style={{ margin: 0, paddingLeft: "20px" }}>
+              <li>📢 Promotional announcements</li>
+              <li>⏱️ Flash sale countdown timers</li>
+              <li>🎯 Targeted CTAs with custom styling</li> 
+              <li>📅 Scheduled campaigns</li> 
+            </ul> 
+          </div> 
+        </> 
+      )} 
     </PolarisEmptyState>
   );
 }

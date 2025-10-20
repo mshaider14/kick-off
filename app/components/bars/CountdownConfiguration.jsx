@@ -9,10 +9,10 @@ import {
   Checkbox,
 } from "@shopify/polaris";
 import PropTypes from "prop-types";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 export function CountdownConfiguration({ formData, onChange }) {
-  const [timerType, setTimerType] = useState(formData.timerType || "fixed");
+  const [timerType, setTimerType] = useState(formData.timerType || "");
   const [showDays, setShowDays] = useState(
     formData.timerFormat ? JSON.parse(formData.timerFormat).showDays : true
   );
@@ -22,9 +22,20 @@ export function CountdownConfiguration({ formData, onChange }) {
   const [showMinutes, setShowMinutes] = useState(
     formData.timerFormat ? JSON.parse(formData.timerFormat).showMinutes : true
   );
+
   const [showSeconds, setShowSeconds] = useState(
     formData.timerFormat ? JSON.parse(formData.timerFormat).showSeconds : true
   );
+
+  // Initialize parent formData with default timer type if empty
+  useEffect(() => {
+    if (!formData.timerType) {
+      setTimerType("fixed");
+      onChange({ ...formData, timerType: "fixed" });
+    } else {
+      setTimerType(formData.timerType);
+    }
+  }, [formData.timerType]); // Add dependency to sync state
 
   const handleTimerTypeChange = useCallback(
     (newType) => {
@@ -73,8 +84,27 @@ export function CountdownConfiguration({ formData, onChange }) {
           Configure Countdown Timer
         </Text>
         <Text variant="bodyMd" as="p" color="subdued">
-          Set up your countdown timer to create urgency for sales and promotions.
+          Set up your countdown timer to create urgency for sales and promotions. Choose a timer type below to get started.
         </Text>
+        
+        {!timerType && (
+          <div style={{ padding: "12px", backgroundColor: "#FFF4E5", borderRadius: "8px", border: "1px solid #FFD79D" }}>
+            <Text variant="bodyMd" as="p" color="warning">
+              ⚠️ Please select a timer type to continue
+            </Text>
+          </div>
+        )}
+
+        {/* Optional Message Field */}
+        <TextField
+          label="Bar Message (Optional)"
+          value={formData.message || ""}
+          onChange={handleFieldChange("message")}
+          placeholder="Limited Time Offer!"
+          helpText="Optional message to display alongside the countdown timer"
+          autoComplete="off"
+          maxLength={200}
+        />
 
         {/* Timer Type Selection */}
         <LegacyStack vertical spacing="tight">
@@ -119,6 +149,24 @@ export function CountdownConfiguration({ formData, onChange }) {
           </Card>
         </LegacyStack>
 
+        {/* Timer Type Explanation Cards */}
+        {timerType && (
+          <div style={{ padding: "16px", backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+            <LegacyStack vertical spacing="tight">
+              <Text variant="bodyMd" as="p" fontWeight="semibold">
+                {timerType === "fixed" && "🎯 Fixed Timer Example"}
+                {timerType === "daily" && "🔄 Daily Recurring Example"}
+                {timerType === "evergreen" && "⏳ Evergreen Timer Example"}
+              </Text>
+              <Text variant="bodySm" as="p" color="subdued">
+                {timerType === "fixed" && "Perfect for: Black Friday sales, product launches, limited-time offers with a specific deadline"}
+                {timerType === "daily" && "Perfect for: Daily flash sales (e.g., 'Ends at midnight'), happy hour deals, daily promotions"}
+                {timerType === "evergreen" && "Perfect for: First-time visitor offers, personalized urgency, continuous campaigns"}
+              </Text>
+            </LegacyStack>
+          </div>
+        )}
+        
         <FormLayout>
           {/* Fixed Timer Configuration */}
           {timerType === "fixed" && (

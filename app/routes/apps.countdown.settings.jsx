@@ -26,14 +26,43 @@ export const loader = async ({ request }) => {
       return json({ success: false, message: "No active bar found." });
     }
 
-    // Check schedule
+    // Check schedule with timezone awareness
     const now = new Date();
-    if ((bar.startDate && now < bar.startDate) || (bar.endDate && now > bar.endDate)) {
-      return json({ success: false, message: "Bar is not within its scheduled time." });
+    if (bar.startDate) {
+      const startDate = new Date(bar.startDate);
+      if (now < startDate) {
+        return json({ success: false, message: "Bar is not within its scheduled time." });
+      }
+    }
+    if (bar.endDate) {
+      const endDate = new Date(bar.endDate);
+      if (now > endDate) {
+        return json({ success: false, message: "Bar is not within its scheduled time." });
+      }
+    }
+    
+    // Validate countdown timer data for production
+    if (bar.type === "countdown") {
+      if (!bar.timerType) {
+        console.error(`Bar ${bar.id} has invalid timer configuration`);
+        return json({ success: false, message: "Invalid countdown configuration." });
+      }
+      
+      // Additional validation based on timer type
+      if (bar.timerType === "fixed" && !bar.timerEndDate) {
+        return json({ success: false, message: "Invalid countdown configuration." });
+      }
+      if (bar.timerType === "daily" && !bar.timerDailyTime) {
+        return json({ success: false, message: "Invalid countdown configuration." });
+      }
+      if (bar.timerType === "evergreen" && (!bar.timerDuration || bar.timerDuration <= 0)) {
+        return json({ success: false, message: "Invalid countdown configuration." });
+      }
     }
 
     // Format the settings to be sent to the storefront.
     const settings = {
+      id: bar.id,
       type: bar.type,
       barMessage: bar.message,
       buttonText: bar.ctaText,
@@ -44,7 +73,7 @@ export const loader = async ({ request }) => {
       // Conditionally add timer settings ONLY if it's a countdown bar
       ...(bar.type === "countdown" && {
         timerType: bar.timerType,
-        timerEndDate: bar.timerEndDate,
+        timerEndDate: bar.timerEndDate ? bar.timerEndDate.toISOString() : null,
         timerDailyTime: bar.timerDailyTime,
         timerDuration: bar.timerDuration,
         timerFormat: bar.timerFormat ? JSON.parse(bar.timerFormat) : {},

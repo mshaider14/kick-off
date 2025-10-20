@@ -22,9 +22,11 @@ export function ContentConfiguration({ formData, onChange }) {
             value={formData.message || ""}
             onChange={handleFieldChange("message")}
             placeholder="Summer Sale - 20% Off All Items!"
-            helpText="The main message displayed in your announcement bar"
+            helpText={`The main message displayed in your announcement bar (${(formData.message || "").length}/200 characters)`}
             autoComplete="off"
             maxLength={200}
+            showCharacterCount
+            error={formData.message && formData.message.trim() === "" ? "Message cannot be empty" : undefined}
           />
 
           <TextField
@@ -32,9 +34,10 @@ export function ContentConfiguration({ formData, onChange }) {
             value={formData.ctaText || ""}
             onChange={handleFieldChange("ctaText")}
             placeholder="Shop Now"
-            helpText="Text for the button. Leave empty to hide the button."
+            helpText={`Text for the button. Leave empty to hide the button (${(formData.ctaText || "").length}/50 characters)`}
             autoComplete="off"
             maxLength={50}
+            showCharacterCount
           />
 
           {formData.ctaText && (
@@ -43,9 +46,11 @@ export function ContentConfiguration({ formData, onChange }) {
               value={formData.ctaLink || ""}
               onChange={handleFieldChange("ctaLink")}
               placeholder="/collections/sale"
-              helpText="Where the button will redirect. Use relative URLs (e.g., /collections/sale) or full URLs."
+              helpText="Where the button will redirect. Use relative URLs (e.g., /collections/sale) or full URLs (https://...)"
               autoComplete="off"
               type="url"
+              prefix={formData.ctaLink && !formData.ctaLink.startsWith("http") ? "🏠" : "🌐"}
+              error={formData.ctaText && (!formData.ctaLink || formData.ctaLink.trim() === "") ? "Link is required when button text is provided" : undefined}
             />
           )}
         </FormLayout>
