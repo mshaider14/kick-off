@@ -82,6 +82,13 @@ model Bar {
   buttonBorder    String?  // CTA button border style
   shadowStyle     String?  // Shadow effect: "none", "subtle", "medium", "strong"
   
+  // Targeting rules fields
+  targetDevices      String?  @default("both") // "desktop", "mobile", "both"
+  targetPages        String?  @default("all") // "all", "homepage", "product", "collection", "cart", "specific", "pattern"
+  targetSpecificUrls String?  // JSON array of specific URLs (when targetPages is "specific")
+  targetUrlPattern   String?  // JSON: {"type": "contains|starts_with|ends_with", "value": "..."} (when targetPages is "pattern")
+  displayFrequency   String?  @default("always") // "always", "once_per_session", "once_per_visitor"
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   

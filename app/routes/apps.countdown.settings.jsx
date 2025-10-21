@@ -98,6 +98,12 @@ export const loader = async ({ request }) => {
       buttonTextColor: bar.buttonTextColor,
       buttonBorder: bar.buttonBorder,
       shadowStyle: bar.shadowStyle,
+      // Targeting rules settings
+      targetDevices: bar.targetDevices || "both",
+      targetPages: bar.targetPages || "all",
+      targetSpecificUrls: bar.targetSpecificUrls,
+      targetUrlPattern: bar.targetUrlPattern,
+      displayFrequency: bar.displayFrequency || "always",
       // Conditionally add timer settings ONLY if it's a countdown bar
       ...(bar.type === "countdown" && {
         timerType: bar.timerType,

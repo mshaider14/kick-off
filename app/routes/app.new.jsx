@@ -26,6 +26,7 @@ import {
   FreeShippingConfiguration,
   DesignCustomization,
   TargetingSchedule,
+  TargetingRules,
   BarPreview,
 } from "../components/bars";
 
@@ -142,6 +143,7 @@ function validateBarData(data, currentStep) {
 
   // --- STEP 4 VALIDATION ---
   if (currentStep === 4) {
+    // Validate schedule dates
     if (data.startDate && data.endDate) {
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
@@ -155,6 +157,31 @@ function validateBarData(data, currentStep) {
       const now = new Date();
       if (start < now) {
         errors.startDate = "Start date cannot be in the past";
+      }
+    }
+    
+    // Validate targeting rules
+    if (data.targetPages === "specific") {
+      // Validate that at least one URL is provided
+      try {
+        const urls = data.targetSpecificUrls ? JSON.parse(data.targetSpecificUrls) : [];
+        if (urls.length === 0) {
+          errors.targetPages = "Please add at least one URL for specific page targeting";
+        }
+      } catch (e) {
+        errors.targetPages = "Invalid URL list format";
+      }
+    }
+    
+    if (data.targetPages === "pattern") {
+      // Validate that pattern value is provided
+      try {
+        const pattern = data.targetUrlPattern ? JSON.parse(data.targetUrlPattern) : { type: "contains", value: "" };
+        if (!pattern.value || pattern.value.trim() === "") {
+          errors.targetUrlPattern = "Please enter a URL pattern value";
+        }
+      } catch (e) {
+        errors.targetUrlPattern = "Invalid URL pattern format";
       }
     }
   }
@@ -330,6 +357,12 @@ export const action = async ({ request }) => {
       buttonTextColor: formData.get("buttonTextColor") || null,
       buttonBorder: formData.get("buttonBorder") || null,
       shadowStyle: formData.get("shadowStyle") || "none",
+      // Targeting rules fields
+      targetDevices: formData.get("targetDevices") || "both",
+      targetPages: formData.get("targetPages") || "all",
+      targetSpecificUrls: formData.get("targetSpecificUrls") || null,
+      targetUrlPattern: formData.get("targetUrlPattern") || null,
+      displayFrequency: formData.get("displayFrequency") || "always",
     };
 
     // Validate
@@ -419,6 +452,12 @@ export default function NewBarPage() {
     buttonTextColor: null,
     buttonBorder: null,
     shadowStyle: "none",
+    // Targeting rules fields
+    targetDevices: "both",
+    targetPages: "all",
+    targetSpecificUrls: "",
+    targetUrlPattern: JSON.stringify({ type: "contains", value: "" }),
+    displayFrequency: "always",
   });
 
   const steps = [
@@ -571,6 +610,12 @@ export default function NewBarPage() {
         formDataToSubmit.append("buttonBorder", formData.buttonBorder);
       }
       formDataToSubmit.append("shadowStyle", formData.shadowStyle || "none");
+      // Targeting rules fields
+      formDataToSubmit.append("targetDevices", formData.targetDevices || "both");
+      formDataToSubmit.append("targetPages", formData.targetPages || "all");
+      formDataToSubmit.append("targetSpecificUrls", formData.targetSpecificUrls || "");
+      formDataToSubmit.append("targetUrlPattern", formData.targetUrlPattern || "");
+      formDataToSubmit.append("displayFrequency", formData.displayFrequency || "always");
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
@@ -720,10 +765,18 @@ export default function NewBarPage() {
         );
       case 4:
         return (
-          <TargetingSchedule
-            formData={formData}
-            onChange={setFormData}
-          />
+          <>
+            <TargetingRules
+              formData={formData}
+              onChange={setFormData}
+            />
+            <div style={{ marginTop: "16px" }}>
+              <TargetingSchedule
+                formData={formData}
+                onChange={setFormData}
+              />
+            </div>
+          </>
         );
       default:
         return null;

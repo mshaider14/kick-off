@@ -370,6 +370,140 @@
     }
   }
 
+  // --- Targeting validation functions ---
+  
+  // Check if current device matches targeting
+  function matchesDeviceTarget(targetDevices) {
+    if (!targetDevices || targetDevices === 'both') return true;
+    
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (targetDevices === 'mobile' && isMobile) return true;
+    if (targetDevices === 'desktop' && !isMobile) return true;
+    
+    return false;
+  }
+  
+  // Check if current page matches targeting
+  function matchesPageTarget(settings) {
+    const targetPages = settings.targetPages || 'all';
+    
+    if (targetPages === 'all') return true;
+    
+    const currentPath = window.location.pathname;
+    
+    // Homepage targeting
+    if (targetPages === 'homepage') {
+      return currentPath === '/' || currentPath === '';
+    }
+    
+    // Product page targeting
+    if (targetPages === 'product') {
+      return currentPath.includes('/products/');
+    }
+    
+    // Collection page targeting
+    if (targetPages === 'collection') {
+      return currentPath.includes('/collections/');
+    }
+    
+    // Cart page targeting
+    if (targetPages === 'cart') {
+      return currentPath.includes('/cart');
+    }
+    
+    // Specific URLs targeting
+    if (targetPages === 'specific') {
+      try {
+        const specificUrls = settings.targetSpecificUrls ? JSON.parse(settings.targetSpecificUrls) : [];
+        return specificUrls.some(url => currentPath === url || currentPath.startsWith(url));
+      } catch (e) {
+        console.error('Invalid targetSpecificUrls:', e);
+        return false;
+      }
+    }
+    
+    // URL pattern matching
+    if (targetPages === 'pattern') {
+      try {
+        const pattern = settings.targetUrlPattern ? JSON.parse(settings.targetUrlPattern) : null;
+        if (!pattern || !pattern.value) return false;
+        
+        const patternValue = pattern.value;
+        const patternType = pattern.type || 'contains';
+        
+        if (patternType === 'contains') {
+          return currentPath.includes(patternValue);
+        } else if (patternType === 'starts_with') {
+          return currentPath.startsWith(patternValue);
+        } else if (patternType === 'ends_with') {
+          return currentPath.endsWith(patternValue);
+        }
+      } catch (e) {
+        console.error('Invalid targetUrlPattern:', e);
+        return false;
+      }
+    }
+    
+    return false;
+  }
+  
+  // Check display frequency and manage cookies/session
+  function shouldShowBasedOnFrequency(settings) {
+    const frequency = settings.displayFrequency || 'always';
+    const barId = settings.id;
+    
+    if (frequency === 'always') return true;
+    
+    if (frequency === 'once_per_session') {
+      const sessionKey = `barShown_session_${barId}`;
+      if (sessionStorage.getItem(sessionKey) === 'true') {
+        return false;
+      }
+      // Mark as shown in session
+      sessionStorage.setItem(sessionKey, 'true');
+      return true;
+    }
+    
+    if (frequency === 'once_per_visitor') {
+      const cookieKey = `barShown_visitor_${barId}`;
+      // Check if cookie exists
+      if (document.cookie.split('; ').find(row => row.startsWith(`${cookieKey}=`))) {
+        return false;
+      }
+      // Set cookie for 365 days
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 365);
+      document.cookie = `${cookieKey}=true; expires=${expiryDate.toUTCString()}; path=/`;
+      return true;
+    }
+    
+    return true;
+  }
+  
+  // Validate all targeting rules
+  function passesTargetingRules(settings) {
+    // Check device targeting
+    if (!matchesDeviceTarget(settings.targetDevices)) {
+      console.log('Bar hidden: device targeting mismatch');
+      return false;
+    }
+    
+    // Check page targeting
+    if (!matchesPageTarget(settings)) {
+      console.log('Bar hidden: page targeting mismatch');
+      return false;
+    }
+    
+    // Check display frequency
+    if (!shouldShowBasedOnFrequency(settings)) {
+      console.log('Bar hidden: display frequency limit reached');
+      return false;
+    }
+    
+    return true;
+  }
+
   // --- Main execution starts here ---
   const proxyBase = '/apps/countdown';
   
@@ -393,6 +527,11 @@
 
       if (isClosed) {
         console.log(`Bar with ID ${settings.id} was previously closed in this session. Hiding.`);
+        return bar.style.display = 'none';
+      }
+
+      // Validate targeting rules
+      if (!passesTargetingRules(settings)) {
         return bar.style.display = 'none';
       }
 
