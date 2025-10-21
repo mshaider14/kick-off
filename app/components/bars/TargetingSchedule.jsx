@@ -47,7 +47,7 @@ export function TargetingSchedule({ formData, onChange }) {
     <Card sectioned>
       <LegacyStack vertical spacing="loose">
         <Text variant="headingLg" as="h2">
-          Targeting &amp; Schedule
+          Schedule
         </Text>
         <Text variant="bodyMd" as="p" color="subdued">
           Set when your announcement bar should be displayed (optional).
@@ -98,8 +98,7 @@ export function TargetingSchedule({ formData, onChange }) {
           </div>
 
           <Text variant="bodyMd" as="p" color="subdued">
-            <strong>Note:</strong> Advanced targeting options (specific pages,
-            customer segments, etc.) will be available in a future update.
+            <strong>💡 Tip:</strong> Use the Targeting Rules section above to control which pages and devices display your bar.
           </Text>
         </FormLayout>
       </LegacyStack>
