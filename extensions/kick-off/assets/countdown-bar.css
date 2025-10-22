@@ -511,3 +511,16 @@
     font-size: 10px;
   }
 }
+
+/* Performance optimization: Prevent layout shift on load */
+.countdown-bar,
+.free-shipping-bar {
+  contain: layout style;
+}
+
+/* Preload optimization: Show placeholder while loading */
+.countdown-bar[data-loading="true"],
+.free-shipping-bar[data-loading="true"] {
+  visibility: hidden;
+  pointer-events: none;
+}
