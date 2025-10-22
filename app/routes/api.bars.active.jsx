@@ -1,0 +1,187 @@
+import db from "../db.server";
+
+function json(data, init) {
+  return new Response(JSON.stringify(data), {
+    ...init,
+    headers: { "Content-Type": "application/json", ...init?.headers },
+  });
+}
+
+/**
+ * GET /api/bars/active
+ * 
+ * Fetch active bars for a given shop. Supports optional priority-based ordering
+ * to return multiple bars if needed.
+ * 
+ * Query Parameters:
+ * - shop (required): The shop domain (e.g., "mystore.myshopify.com")
+ * - limit (optional): Maximum number of bars to return (default: 1)
+ * 
+ * Returns:
+ * {
+ *   success: boolean,
+ *   bars: Array<Bar> | null,
+ *   message?: string
+ * }
+ */
+export const loader = async ({ request }) => {
+  try {
+    const url = new URL(request.url);
+    const shop = url.searchParams.get("shop");
+    const limit = parseInt(url.searchParams.get("limit") || "1", 10);
+
+    if (!shop) {
+      return json({ success: false, error: "Shop parameter required" }, { status: 400 });
+    }
+
+    // Find active bars, ordered by updatedAt (most recent first) for priority
+    const bars = await db.bar.findMany({
+      where: { 
+        shop, 
+        isActive: true 
+      },
+      orderBy: { updatedAt: "desc" },
+      take: limit,
+    });
+
+    if (!bars || bars.length === 0) {
+      return json({ 
+        success: false, 
+        bars: null,
+        message: "No active bars found." 
+      });
+    }
+
+    // Filter bars based on schedule
+    const now = new Date();
+    const validBars = bars.filter(bar => {
+      // Check start date
+      if (bar.startDate) {
+        const startDate = new Date(bar.startDate);
+        if (now < startDate) {
+          return false;
+        }
+      }
+      
+      // Check end date
+      if (bar.endDate) {
+        const endDate = new Date(bar.endDate);
+        if (now > endDate) {
+          return false;
+        }
+      }
+      
+      // Validate countdown timer configuration
+      if (bar.type === "countdown") {
+        if (!bar.timerType) return false;
+        
+        if (bar.timerType === "fixed" && !bar.timerEndDate) return false;
+        if (bar.timerType === "daily" && !bar.timerDailyTime) return false;
+        if (bar.timerType === "evergreen" && (!bar.timerDuration || bar.timerDuration <= 0)) return false;
+      }
+      
+      // Validate shipping bar configuration
+      if (bar.type === "shipping") {
+        if (!bar.shippingThreshold || bar.shippingThreshold <= 0) return false;
+        if (!bar.shippingGoalText || !bar.shippingReachedText) return false;
+      }
+      
+      return true;
+    });
+
+    if (validBars.length === 0) {
+      return json({ 
+        success: false, 
+        bars: null,
+        message: "No valid active bars found for current time." 
+      });
+    }
+
+    // Format bars for storefront consumption
+    const formattedBars = validBars.map(bar => ({
+      id: bar.id,
+      shop: bar.shop,
+      type: bar.type,
+      message: bar.message,
+      ctaText: bar.ctaText,
+      ctaLink: bar.ctaLink,
+      backgroundColor: bar.backgroundColor,
+      textColor: bar.textColor,
+      fontSize: bar.fontSize,
+      position: bar.position,
+      
+      // Advanced design settings
+      fontFamily: bar.fontFamily,
+      fontWeight: bar.fontWeight,
+      textAlign: bar.textAlign,
+      paddingTop: bar.paddingTop,
+      paddingBottom: bar.paddingBottom,
+      paddingLeft: bar.paddingLeft,
+      paddingRight: bar.paddingRight,
+      borderColor: bar.borderColor,
+      borderWidth: bar.borderWidth,
+      borderRadius: bar.borderRadius,
+      buttonBgColor: bar.buttonBgColor,
+      buttonTextColor: bar.buttonTextColor,
+      buttonBorder: bar.buttonBorder,
+      shadowStyle: bar.shadowStyle,
+      
+      // Targeting rules
+      targetDevices: bar.targetDevices || "both",
+      targetPages: bar.targetPages || "all",
+      targetSpecificUrls: bar.targetSpecificUrls,
+      targetUrlPattern: bar.targetUrlPattern,
+      displayFrequency: bar.displayFrequency || "always",
+      
+      // Countdown timer settings (only for countdown bars)
+      ...(bar.type === "countdown" && {
+        timerType: bar.timerType,
+        timerEndDate: bar.timerEndDate ? bar.timerEndDate.toISOString() : null,
+        timerDailyTime: bar.timerDailyTime,
+        timerDuration: bar.timerDuration,
+        timerFormat: bar.timerFormat ? JSON.parse(bar.timerFormat) : {},
+        timerEndAction: bar.timerEndAction,
+        timerEndMessage: bar.timerEndMessage,
+      }),
+      
+      // Shipping settings (only for shipping bars)
+      ...(bar.type === "shipping" && {
+        shippingThreshold: bar.shippingThreshold,
+        shippingCurrency: bar.shippingCurrency || "USD",
+        shippingGoalText: bar.shippingGoalText,
+        shippingReachedText: bar.shippingReachedText,
+        shippingProgressColor: bar.shippingProgressColor || "#4ade80",
+        shippingShowIcon: bar.shippingShowIcon !== false,
+      }),
+    }));
+
+    return json({ 
+      success: true, 
+      bars: formattedBars 
+    }, { 
+      headers: { 
+        "Cache-Control": "public, max-age=60",
+        "Access-Control-Allow-Origin": "*"
+      } 
+    });
+  } catch (error) {
+    console.error("API bars/active error:", error);
+    return json({ 
+      success: false, 
+      bars: null,
+      error: error.message 
+    }, { status: 500 });
+  }
+};
+
+// Handle CORS preflight
+export const OPTIONS = () => {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+};
