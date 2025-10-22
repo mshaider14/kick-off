@@ -44,6 +44,11 @@
   if (!bar) return;
 
   const shop = bar.getAttribute('data-shop');
+  if (!shop) {
+    console.error('Shop parameter missing from bar element');
+    return;
+  }
+  
   let countdownInterval;
   
   // Performance monitoring (only in development)
@@ -56,6 +61,12 @@
 
   // Applies styles and content common to ALL bar types.
   function applyCommonSettings(settings) {
+    // Safety check
+    if (!settings || !settings.id) {
+      console.error('Invalid settings object:', settings);
+      return;
+    }
+    
     // Hide all bar containers initially, the specific handler will show the correct one
     document.getElementById('countdown-cta-bar').style.display = 'none';
     document.getElementById('free-shipping-bar').style.display = 'none';
@@ -252,6 +263,10 @@
 
   // --- Logic specifically for FREE SHIPPING bars ---
   const shippingBar = document.getElementById('free-shipping-bar');
+  
+  if (!shippingBar) {
+    console.warn('Free shipping bar element not found in DOM');
+  }
 
   // Update progress bar based on cart value
   async function updateShippingProgress(settings) {
