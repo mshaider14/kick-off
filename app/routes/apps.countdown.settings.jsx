@@ -75,6 +75,7 @@ export const loader = async ({ request }) => {
     // Format the settings to be sent to the storefront.
     const settings = {
       id: bar.id,
+      shop: bar.shop,
       type: bar.type,
       barMessage: bar.message,
       buttonText: bar.ctaText,
