@@ -1,7 +1,31 @@
 (function() {
   'use strict';
 
-  function trackEvent() {}
+  // Track analytics events
+  function trackEvent(eventType, settings, extraData = {}) {
+    const proxyBase = '/apps/countdown';
+    const endpoint = eventType === 'bar_impression' 
+      ? `${proxyBase}/analytics/track-view`
+      : `${proxyBase}/analytics/track-click`;
+
+    const data = {
+      shop: settings.shop || shop,
+      barId: settings.id,
+      ...extraData
+    };
+
+    // Send event asynchronously
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+      keepalive: true
+    }).catch(err => {
+      console.error('Analytics tracking error:', err);
+    });
+  }
 
   const bar = document.getElementById('countdown-cta-bar');
   if (!bar) return;
@@ -554,6 +578,8 @@
       const closeBtn = document.getElementById('close-bar');
       if (closeBtn) {
         closeBtn.addEventListener('click', () => {
+          // Track bar close
+          trackEvent('bar_closed', settings);
           
           bar.style.display = 'none';
           sessionStorage.setItem(sessionKey, 'true');

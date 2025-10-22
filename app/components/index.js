@@ -4,3 +4,4 @@ export { default as EmptyState } from "./EmptyState";
 export { default as LoadingState } from "./LoadingState";
 export { default as ErrorBoundary } from "./ErrorBoundary";
 export { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+export { AnalyticsChart } from "./analytics/AnalyticsChart";

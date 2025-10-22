@@ -92,6 +92,38 @@ model Bar {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
+  views           BarView[]
+  clicks          BarClick[]
+  
   @@index([shop])
   @@index([shop, isActive])
+}
+
+model BarView {
+  id        String   @id @default(cuid())
+  barId     String
+  bar       Bar      @relation(fields: [barId], references: [id], onDelete: Cascade)
+  shop      String
+  timestamp DateTime @default(now())
+  userAgent String?
+  
+  @@index([barId])
+  @@index([shop])
+  @@index([timestamp])
+  @@index([shop, timestamp])
+}
+
+model BarClick {
+  id        String   @id @default(cuid())
+  barId     String
+  bar       Bar      @relation(fields: [barId], references: [id], onDelete: Cascade)
+  shop      String
+  ctaLink   String?
+  timestamp DateTime @default(now())
+  userAgent String?
+  
+  @@index([barId])
+  @@index([shop])
+  @@index([timestamp])
+  @@index([shop, timestamp])
 }
