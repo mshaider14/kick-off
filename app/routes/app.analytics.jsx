@@ -22,6 +22,17 @@ function json(data, init) {
   return Response.json(data, init);
 }
 
+// Helper to remove emojis and special characters for safe CSV export
+const cleanString = (str) => {
+    // Regex to remove common emojis, symbols, and non-printable characters
+    return str.replace(/([\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|\uD83E[\uDD00-\uDDFF]|[\u2000-\u3300]|\uFE0F|\u20E3|\u0023|\u002A|\u0030-\u0039)/g, '').trim();
+};
+
+const formatDate = (date) => {
+  if (!date) return 'N/A';
+  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
   return json({});
@@ -83,14 +94,16 @@ export default function AnalyticsPage() {
   const exportToCSV = () => {
     if (!analyticsData || !analyticsData.barMetrics) return;
 
-    const headers = ['Bar Name', 'Type', 'Status', 'Views', 'Clicks', 'CTR (%)'];
+    const headers = ['Bar Name', 'Type', 'Views', 'Clicks', 'CTR (%)', 'Position', 'Created', 'Status'];
     const rows = analyticsData.barMetrics.map(bar => [
-      bar.name,
+      cleanString(bar.name),
       bar.type,
-      bar.isActive ? 'Active' : 'Inactive',
       bar.views,
       bar.clicks,
-      bar.ctr
+      bar.ctr,
+      bar.position === 'top' ? 'Top' : 'Bottom',
+      formatDate(bar.createdAt),
+      bar.isActive ? 'Active' : 'Inactive'
     ]);
 
     const csvContent = [
@@ -159,6 +172,8 @@ export default function AnalyticsPage() {
     bar.views,
     bar.clicks,
     `${bar.ctr}%`,
+    bar.position === 'top' ? '⬆️ Top' : '⬇️ Bottom',
+    formatDate(bar.createdAt),
     bar.isActive ? <Badge tone="success">Active</Badge> : <Badge>Inactive</Badge>
   ]);
 
@@ -240,8 +255,8 @@ export default function AnalyticsPage() {
                   <Text as="h3" variant="headingMd">Bar Performance</Text>
                   {barMetrics.length > 0 ? (
                     <DataTable
-                      columnContentTypes={['text', 'text', 'numeric', 'numeric', 'numeric', 'text']}
-                      headings={['Bar Name', 'Type', 'Views', 'Clicks', 'CTR', 'Status']}
+                      columnContentTypes={['text', 'text', 'numeric', 'numeric', 'numeric', 'text', 'text', 'text']}
+                      headings={['Bar Name', 'Type', 'Views', 'Clicks', 'CTR', 'Position', 'Created', 'Status']}
                       rows={tableRows}
                     />
                   ) : (

@@ -22,6 +22,9 @@ export function AnalyticsChart({ data }) {
       <Box padding="400">
         <Text as="h3" variant="headingMd">Views Over Time</Text>
         <Box paddingBlockStart="400">
+          <div style={{ paddingBlockEnd: '4px', height: '16px' }}>
+            <Text as="span" variant="bodySm" tone="subdued">{maxViews.toLocaleString()} views</Text>
+          </div>
           <div style={{ 
             display: 'flex', 
             alignItems: 'flex-end', 

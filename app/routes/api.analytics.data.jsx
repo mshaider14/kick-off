@@ -30,6 +30,8 @@ export const loader = async ({ request }) => {
         message: true,
         type: true,
         isActive: true,
+        createdAt: true,
+        position: true,
       }
     });
 
@@ -76,7 +78,9 @@ export const loader = async ({ request }) => {
         isActive: bar.isActive,
         views: viewCount,
         clicks: clickCount,
-        ctr: parseFloat(ctr)
+        ctr: parseFloat(ctr),
+        createdAt: bar.createdAt,
+        position: bar.position,
       };
     });
 
