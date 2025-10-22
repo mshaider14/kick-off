@@ -16,7 +16,12 @@ import { TitleBar } from "@shopify/app-bridge-react";
 import { CalendarIcon } from "@shopify/polaris-icons";
 import { authenticate } from "../shopify.server";
 import { useState, useCallback, useEffect } from "react";
-import { AnalyticsChart } from "../components/analytics/AnalyticsChart";
+import { 
+  ViewsLineChart, 
+  CTRComparisonChart, 
+  EngagementMetricsChart,
+  ViewsClicksComparisonChart 
+} from "../components/analytics/AnalyticsChart";
 
 function json(data, init) {
   return Response.json(data, init);
@@ -247,7 +252,16 @@ export default function AnalyticsPage() {
               </Card>
             </InlineGrid>
 
-            <AnalyticsChart data={chartData} />
+            <BlockStack gap="400">
+              <ViewsLineChart data={chartData} />
+              
+              <InlineGrid columns={{ xs: 1, md: 2 }} gap="400">
+                <CTRComparisonChart data={barMetrics} />
+                <EngagementMetricsChart data={barMetrics} />
+              </InlineGrid>
+              
+              <ViewsClicksComparisonChart data={chartData} />
+            </BlockStack>
 
             <Card>
               <Box padding="400">

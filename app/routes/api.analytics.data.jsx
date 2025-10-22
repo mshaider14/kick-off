@@ -89,16 +89,26 @@ export const loader = async ({ request }) => {
     const totalClicks = clicks.length;
     const overallCtr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : "0.00";
 
-    // Group views by date for chart
+    // Group views and clicks by date for chart
     const viewsByDate = {};
+    const clicksByDate = {};
+
     views.forEach(view => {
       const date = view.timestamp.toISOString().split('T')[0];
       viewsByDate[date] = (viewsByDate[date] || 0) + 1;
     });
 
-    const chartData = Object.entries(viewsByDate).map(([date, count]) => ({
+    clicks.forEach(click => {
+      const date = click.timestamp.toISOString().split('T')[0];
+      clicksByDate[date] = (clicksByDate[date] || 0) + 1;
+    });
+
+    // Combine dates from both views and clicks
+    const allDates = new Set([...Object.keys(viewsByDate), ...Object.keys(clicksByDate)]);
+    const chartData = Array.from(allDates).sort().map(date => ({
       date,
-      views: count
+      views: viewsByDate[date] || 0,
+      clicks: clicksByDate[date] || 0
     }));
 
     return json({
