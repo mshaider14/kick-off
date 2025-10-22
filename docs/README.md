@@ -266,17 +266,42 @@ docs/
 ### For Testing
 👉 Run `node docs/test-validation.js`
 
+## Recent Features
+
+### ✅ Analytics Dashboard (2025-10-22)
+- **Overview Metrics:** Total views, clicks, CTR, conversion rate
+- **Bar Performance Table:** Per-bar analytics
+- **Views Over Time Chart:** Visual trend analysis
+- **Date Range Selector:** Filter by custom periods
+- **CSV Export:** Download analytics data
+- 👉 See [ANALYTICS.md](ANALYTICS.md) for details
+
+### ✅ Targeting Rules (2025-10-21)
+- **Device Targeting:** Desktop, mobile, or both
+- **Page Targeting:** Homepage, products, collections, etc.
+- **Display Frequency:** Always, per session, or per visitor
+- 👉 See [TARGETING_RULES.md](TARGETING_RULES.md) for details
+
+### ✅ Countdown Timers (2025-10-17)
+- **Fixed:** Count down to specific date/time
+- **Daily:** Reset every day at specified time
+- **Evergreen:** Personal countdown per visitor
+- 👉 See [countdown-timer-feature.md](countdown-timer-feature.md) for details
+
+### ✅ Free Shipping Bars (2025-10-20)
+- **Progress Bar:** Visual cart value progress
+- **Dynamic Messages:** Updates based on cart total
+- **Customizable Threshold:** Set your free shipping goal
+- 👉 See [FREE_SHIPPING_FEATURE.md](FREE_SHIPPING_FEATURE.md) for details
+
 ## Future Enhancements
 
-- Edit existing bars
-- Delete bars with confirmation
-- Duplicate bars
-- Countdown timer bars
-- Free shipping progress bars
-- Advanced targeting (pages, segments)
-- Analytics (impressions, clicks)
-- A/B testing
-- Bar templates
+- Advanced conversion tracking
+- A/B testing capabilities
+- Revenue attribution
+- Geographic targeting
+- Time-based targeting
+- Cart value targeting
 
 ## Status
 

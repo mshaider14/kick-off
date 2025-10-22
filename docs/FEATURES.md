@@ -199,6 +199,35 @@ See [TARGETING_RULES.md](./TARGETING_RULES.md) for comprehensive testing guide.
 - Test timezone handling with your target audience
 - Combine with targeting rules for maximum control
 
+### 6. Analytics Dashboard ✨ NEW
+
+Track bar performance with comprehensive analytics:
+
+#### Overview Metrics
+- **Total Views** - Count of bar impressions
+- **Total Clicks** - Number of CTA clicks
+- **Click-Through Rate (CTR)** - Percentage of views resulting in clicks
+- **Conversion Rate** - Coming soon for e-commerce tracking
+
+#### Bar Performance Table
+View detailed metrics for each bar:
+- Views, clicks, and CTR per bar
+- Active/inactive status indicators
+- Bar type and name identification
+
+#### Views Over Time Chart
+- Visual chart showing daily view trends
+- Helps identify peak engagement periods
+- Updates dynamically with date range selection
+
+#### Features
+- **Date Range Selector** - Filter data by custom time periods
+- **CSV Export** - Download analytics data for external analysis
+- **Real-time Tracking** - Automatic tracking on storefront
+- **Detailed Insights** - Per-bar performance metrics
+
+See [ANALYTICS.md](./ANALYTICS.md) for complete analytics documentation.
+
 ## Future Enhancements
 
 Potential features for future releases:
@@ -208,7 +237,8 @@ Potential features for future releases:
 - Cart value targeting
 - Traffic source targeting (organic, paid, direct)
 - A/B testing capabilities
-- Advanced analytics and reporting
+- Conversion tracking and revenue attribution
+- Advanced analytics (engagement rate, time-to-click, heatmaps)
 
 ## Support
 
