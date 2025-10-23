@@ -1,0 +1,118 @@
+┌─────────────────────────────────────────────────────────────────────┐
+│  Settings                                    [Save Settings] Button  │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ ACCOUNT INFORMATION                                          │   │
+│  │                                                               │   │
+│  │  Store:         your-shop.myshopify.com                      │   │
+│  │  Email:         merchant@example.com                         │   │
+│  │  Name:          John Doe                                     │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ GENERAL SETTINGS                                             │   │
+│  │                                                               │   │
+│  │  Store Timezone                                              │   │
+│  │  ┌───────────────────────────────────────────────────────┐  │   │
+│  │  │ Eastern Time (US & Canada)                        ▼  │  │   │
+│  │  └───────────────────────────────────────────────────────┘  │   │
+│  │  Set your store's timezone for scheduling and reports       │   │
+│  │                                                               │   │
+│  │  Default Bar Position                                        │   │
+│  │  ┌───────────────────────────────────────────────────────┐  │   │
+│  │  │ Top of page                                       ▼  │  │   │
+│  │  └───────────────────────────────────────────────────────┘  │   │
+│  │  Choose where announcement bars appear by default           │   │
+│  │                                                               │   │
+│  │  Tracking Preferences                                        │   │
+│  │  ☑ Enable view tracking                                     │   │
+│  │    Track how many times announcement bars are viewed        │   │
+│  │                                                               │   │
+│  │  ☑ Enable click tracking                                    │   │
+│  │    Track clicks on announcement bar call-to-action buttons  │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ NOTIFICATION PREFERENCES                                     │   │
+│  │                                                               │   │
+│  │  Manage how you receive updates about your announcement bars│   │
+│  │                                                               │   │
+│  │  ☑ Email notifications for bar performance                  │   │
+│  │    Receive email alerts when bars reach performance         │   │
+│  │    milestones                                                │   │
+│  │                                                               │   │
+│  │  ☑ Weekly summary reports                                   │   │
+│  │    Get a weekly email with your announcement bar analytics  │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ ℹ️ INFO                                                       │   │
+│  │  Changes to tracking preferences will apply to new bars and  │   │
+│  │  data collected going forward. Existing analytics data will  │   │
+│  │  not be affected.                                            │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
+
+TIMEZONE OPTIONS (Select Dropdown):
+────────────────────────────────────
+• Eastern Time (US & Canada)
+• Central Time (US & Canada)
+• Mountain Time (US & Canada)
+• Pacific Time (US & Canada)
+• Alaska
+• Hawaii
+• London (GMT)
+• Paris
+• Berlin
+• Moscow
+• Dubai
+• Mumbai
+• Bangkok
+• Singapore
+• Tokyo
+• Sydney
+• Auckland
+• UTC
+
+BAR POSITION OPTIONS (Select Dropdown):
+────────────────────────────────────────
+• Top of page
+• Bottom of page
+
+INTERACTIVE ELEMENTS:
+─────────────────────
+✓ All checkboxes are toggleable
+✓ Select dropdowns open with options
+✓ Save button at top right
+✓ Loading state on save
+✓ Toast notifications for success/error
+✓ All form fields controlled and update in real-time
+
+USER FLOWS:
+───────────
+1. Page Load
+   → Fetches settings from backend
+   → Displays default settings for new merchants
+   → Shows account information
+
+2. Edit Settings
+   → User changes timezone
+   → User toggles tracking options
+   → User updates notification preferences
+   → All changes update form state immediately
+
+3. Save Settings
+   → User clicks "Save Settings"
+   → Button shows loading state
+   → API request sent to backend
+   → Validation performed
+   → Success: Green toast "✅ Settings saved successfully!"
+   → Error: Red toast "❌ Error: [message]"
+   → Settings persisted to database
+
+4. Reload
+   → Settings loaded from database
+   → Form populated with saved values
+   → User sees their previous selections
