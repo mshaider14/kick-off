@@ -129,6 +129,13 @@ export default function BarsPage() {
           {bar.message}
         </Text>
       )}
+      {/* Show schedule info */}
+      {(bar.scheduleStartImmediate || bar.startDate || bar.endDate || bar.scheduleEndNever) && (
+        <Text variant="bodySm" as="p" color="subdued" style={{ marginTop: "4px" }}>
+          {bar.scheduleStartImmediate ? "⚡ Immediate" : bar.startDate ? `📅 ${new Date(bar.startDate).toLocaleDateString()}` : ""} 
+          {bar.scheduleEndNever ? " → ∞" : bar.endDate ? ` → ${new Date(bar.endDate).toLocaleDateString()}` : ""}
+        </Text>
+      )}
     </div>,
     <div key={`type-${bar.id}`} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
       <span style={{ fontSize: "16px" }}>
@@ -221,6 +228,7 @@ export default function BarsPage() {
 function BarActions({ bar, onDelete, isProcessing }) {
   const [popoverActive, setPopoverActive] = useState(false);
   const submit = useSubmit();
+  const navigate = useNavigate();
 
   const handleToggleStatus = () => {
     const formData = new FormData();
@@ -228,6 +236,11 @@ function BarActions({ bar, onDelete, isProcessing }) {
     formData.append("id", bar.id);
     formData.append("status", String(!bar.isActive));
     submit(formData, { method: "post" });
+    setPopoverActive(false);
+  };
+
+  const handleEdit = () => {
+    navigate(`/app/bars/${bar.id}/edit`);
     setPopoverActive(false);
   };
 
@@ -243,6 +256,11 @@ function BarActions({ bar, onDelete, isProcessing }) {
     >
       <ActionList
         items={[
+          {
+            content: "Edit",
+            onAction: handleEdit,
+            disabled: isProcessing,
+          },
           {
             content: bar.isActive ? "Deactivate" : "Activate",
             onAction: handleToggleStatus,
