@@ -48,6 +48,9 @@ model Bar {
   isActive        Boolean  @default(false)
   startDate       DateTime?
   endDate         DateTime?
+  timezone        String?  @default("UTC") // IANA timezone (e.g., "America/New_York", "Europe/London")
+  scheduleStartImmediate Boolean @default(false) // If true, bar starts immediately when published
+  scheduleEndNever       Boolean @default(false) // If true, bar runs indefinitely
 
   // Countdown timer fields
   timerType       String?  // "fixed", "daily", "evergreen"

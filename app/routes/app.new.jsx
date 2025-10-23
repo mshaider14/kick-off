@@ -144,20 +144,24 @@ function validateBarData(data, currentStep) {
   // --- STEP 4 VALIDATION ---
   if (currentStep === 4) {
     // Validate schedule dates
-    if (data.startDate && data.endDate) {
+    if (!data.scheduleStartImmediate && !data.scheduleEndNever && data.startDate && data.endDate) {
       const start = new Date(data.startDate);
       const end = new Date(data.endDate);
       if (end <= start) {
         errors.endDate = "End date must be after start date";
       }
     }
-    // Validate that start date is not in the past
-    if (data.startDate) {
+    // Validate that start date is not in the past (only if not immediate)
+    if (!data.scheduleStartImmediate && data.startDate) {
       const start = new Date(data.startDate);
       const now = new Date();
       if (start < now) {
         errors.startDate = "Start date cannot be in the past";
       }
+    }
+    // Validate that if neither immediate nor specific date, we need a start date
+    if (!data.scheduleStartImmediate && !data.startDate) {
+      errors.startDate = "Please select a start date or choose 'Start immediately'";
     }
     
     // Validate targeting rules
@@ -317,6 +321,9 @@ export const action = async ({ request }) => {
     const formData = await request.formData();
     const actionType = formData.get("actionType");
 
+    const scheduleStartImmediate = formData.get("scheduleStartImmediate") === "true";
+    const scheduleEndNever = formData.get("scheduleEndNever") === "true";
+    
     const barData = {
       type: formData.get("type") || "announcement",
       message: formData.get("message") || "",
@@ -327,8 +334,11 @@ export const action = async ({ request }) => {
       fontSize: parseInt(formData.get("fontSize") || "14", 10),
       position: formData.get("position") || "top",
       isActive: actionType === "publish",
-      startDate: formData.get("startDate") ? new Date(formData.get("startDate")) : null,
-      endDate: formData.get("endDate") ? new Date(formData.get("endDate")) : null,
+      startDate: scheduleStartImmediate ? null : (formData.get("startDate") ? new Date(formData.get("startDate")) : null),
+      endDate: scheduleEndNever ? null : (formData.get("endDate") ? new Date(formData.get("endDate")) : null),
+      timezone: formData.get("timezone") || "UTC",
+      scheduleStartImmediate: scheduleStartImmediate,
+      scheduleEndNever: scheduleEndNever,
       timerType: formData.get("timerType") || null,
       timerEndDate: formData.get("timerEndDate") ? new Date(formData.get("timerEndDate")) : null,
       timerDailyTime: formData.get("timerDailyTime") || null,
@@ -424,6 +434,9 @@ export default function NewBarPage() {
     position: "top",
     startDate: "",
     endDate: "",
+    timezone: "UTC",
+    scheduleStartImmediate: false,
+    scheduleEndNever: false,
     timerType: "fixed",
     timerEndDate: "",
     timerDailyTime: "",
@@ -562,10 +575,13 @@ export default function NewBarPage() {
       formDataToSubmit.append("fontSize", formData.fontSize.toString());
       formDataToSubmit.append("position", formData.position);
       formDataToSubmit.append("actionType", actionType);
-      if (formData.startDate) {
+      formDataToSubmit.append("timezone", formData.timezone || "UTC");
+      formDataToSubmit.append("scheduleStartImmediate", formData.scheduleStartImmediate ? "true" : "false");
+      formDataToSubmit.append("scheduleEndNever", formData.scheduleEndNever ? "true" : "false");
+      if (formData.startDate && !formData.scheduleStartImmediate) {
         formDataToSubmit.append("startDate", formData.startDate);
       }
-      if (formData.endDate) {
+      if (formData.endDate && !formData.scheduleEndNever) {
         formDataToSubmit.append("endDate", formData.endDate);
       }
       // Countdown timer fields

@@ -55,15 +55,36 @@ export const loader = async ({ request }) => {
     // Filter bars based on schedule
     const now = new Date();
     const validBars = bars.filter(bar => {
+      // If scheduleStartImmediate is true, bar should be active immediately
+      if (bar.scheduleStartImmediate) {
+        // Only check end date in this case
+        if (bar.scheduleEndNever) {
+          return true; // Runs indefinitely
+        }
+        if (bar.endDate) {
+          const endDate = new Date(bar.endDate);
+          if (now > endDate) {
+            return false;
+          }
+        }
+        return true;
+      }
+      
       // Check start date
       if (bar.startDate) {
         const startDate = new Date(bar.startDate);
         if (now < startDate) {
           return false;
         }
+      } else {
+        // No start date and not immediate start - shouldn't be shown
+        return false;
       }
       
       // Check end date
+      if (bar.scheduleEndNever) {
+        return true; // Runs indefinitely
+      }
       if (bar.endDate) {
         const endDate = new Date(bar.endDate);
         if (now > endDate) {
@@ -132,6 +153,11 @@ export const loader = async ({ request }) => {
       targetSpecificUrls: bar.targetSpecificUrls,
       targetUrlPattern: bar.targetUrlPattern,
       displayFrequency: bar.displayFrequency || "always",
+      
+      // Schedule information
+      timezone: bar.timezone || "UTC",
+      scheduleStartImmediate: bar.scheduleStartImmediate || false,
+      scheduleEndNever: bar.scheduleEndNever || false,
       
       // Countdown timer settings (only for countdown bars)
       ...(bar.type === "countdown" && {
