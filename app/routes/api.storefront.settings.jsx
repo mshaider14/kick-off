@@ -5,6 +5,16 @@ function json(data, init) {
   return Response.json(data, init);
 }
 
+// Default settings for new merchants
+const DEFAULT_SETTINGS = {
+  timezone: "America/New_York",
+  defaultBarPosition: "top",
+  enableViewTracking: true,
+  enableClickTracking: true,
+  emailNotifications: true,
+  weeklySummaryReports: true,
+};
+
 export const loader = async ({ request }) => {
   try {
     const url = new URL(request.url);
@@ -24,21 +34,18 @@ export const loader = async ({ request }) => {
       where: { shop: shop }
     });
 
+    let settings = DEFAULT_SETTINGS;
     if (savedSetting && savedSetting.value) {
-      const settings = JSON.parse(savedSetting.value);
-      return json({ success: true, settings }, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=60"
-        }
-      });
+      const parsedSettings = JSON.parse(savedSetting.value);
+      // Merge with defaults to ensure all fields exist
+      settings = { ...DEFAULT_SETTINGS, ...parsedSettings };
     }
 
-    return json({ success: false, message: "No settings found" }, {
+    return json({ success: true, settings }, {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=60"
       }
     });
   } catch (error) {
