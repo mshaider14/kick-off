@@ -29,7 +29,7 @@ import {
   TargetingSchedule,
   TargetingRules,
   BarPreview,
-} from "../../components/bars";
+} from "../components/bars";
 
 function json(data, init) {
   return Response.json(data, init);
