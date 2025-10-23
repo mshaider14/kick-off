@@ -6,6 +6,20 @@ Rather than cloning this repo, follow the [Quick Start steps](https://github.com
 
 Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-react-router) for more details on the React Router app package.
 
+## Features
+
+### Bar Scheduling System
+The app includes a comprehensive scheduling system that allows automatic activation and deactivation of announcement bars:
+
+- **Flexible Start Options:** Start immediately or schedule for a specific date/time
+- **Flexible End Options:** Never end or schedule an end date/time  
+- **Timezone Support:** Select from common timezones for accurate scheduling
+- **Schedule Preview:** View a summary of your schedule before publishing
+- **Automatic Management:** Bars automatically activate/deactivate at scheduled times via cron job
+- **Edit Capability:** Modify schedules after bar creation
+
+See [SCHEDULING.md](docs/SCHEDULING.md) for detailed documentation on setting up and using the scheduling system.
+
 ## Upgrading from Remix
 
 If you have an existing Remix app that you want to upgrade to React Router, please follow the [upgrade guide](https://github.com/Shopify/shopify-app-template-react-router/wiki/Upgrading-from-Remix).  Otherwise, please follow the quick start guide below.

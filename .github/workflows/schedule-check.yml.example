@@ -1,0 +1,25 @@
+# Example GitHub Actions workflow for bar schedule checking
+# To use this:
+# 1. Rename this file to schedule-check.yml
+# 2. Add APP_URL and CRON_SECRET_TOKEN to your repository secrets
+# 3. Enable GitHub Actions in your repository
+
+name: Bar Schedule Check
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-schedules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call schedule check endpoint
+        run: |
+          curl -X POST "${{ secrets.APP_URL }}/api/schedule/check?token=${{ secrets.CRON_SECRET_TOKEN }}"
+        continue-on-error: true
+      
+      - name: Log completion
+        run: echo "Schedule check completed at $(date)"
