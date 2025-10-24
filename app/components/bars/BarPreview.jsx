@@ -22,6 +22,15 @@ export function BarPreview({ formData }) {
     shippingReachedText = "You've unlocked free shipping! 🎉",
     shippingProgressColor = "#4ade80",
     shippingShowIcon = true,
+    // Email capture fields
+    emailPlaceholder = "Enter your email",
+    namePlaceholder = "Your name (optional)",
+    nameFieldEnabled = false,
+    submitButtonText = "Get My Discount",
+    successMessage = "Thank you! Check your email for your discount code.",
+    discountCode = "",
+    privacyCheckboxEnabled = false,
+    privacyCheckboxText = "I agree to receive marketing emails",
     // New design fields
     fontFamily = "system-ui, -apple-system, sans-serif",
     fontWeight = "normal",
@@ -49,6 +58,9 @@ export function BarPreview({ formData }) {
   // Free shipping preview state - simulate cart values
   const [previewCartValue, setPreviewCartValue] = useState(25); // Default to 50% of threshold
   const [showSuccessState, setShowSuccessState] = useState(false);
+  
+  // Email capture preview state
+  const [showEmailSuccess, setShowEmailSuccess] = useState(false);
 
   // Parse timer format
   let format = { showDays: true, showHours: true, showMinutes: true, showSeconds: true };
@@ -308,6 +320,127 @@ export function BarPreview({ formData }) {
                       textAlign: "center"
                     }}>
                       {formatAmount(cartValue, shippingCurrency)} / {formatAmount(threshold, shippingCurrency)}
+                    </div>
+                  )}
+                </div>
+              ) : type === "email" ? (
+                // Email Capture Bar
+                <div style={{ width: "100%", maxWidth: "600px" }}>
+                  <div style={{ marginBottom: "12px", fontWeight: "600" }}>
+                    {message}
+                  </div>
+                  
+                  {!showEmailSuccess ? (
+                    // Form view
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                        <input
+                          type="email"
+                          placeholder={emailPlaceholder}
+                          style={{
+                            flex: 1,
+                            minWidth: "200px",
+                            padding: "10px 14px",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                            borderRadius: "6px",
+                            fontSize: `${fontSize}px`,
+                            background: "rgba(255, 255, 255, 0.15)",
+                            color: textColor,
+                            outline: "none",
+                          }}
+                          disabled
+                        />
+                        {nameFieldEnabled && (
+                          <input
+                            type="text"
+                            placeholder={namePlaceholder}
+                            style={{
+                              flex: "0.8",
+                              minWidth: "180px",
+                              padding: "10px 14px",
+                              border: "1px solid rgba(255, 255, 255, 0.3)",
+                              borderRadius: "6px",
+                              fontSize: `${fontSize}px`,
+                              background: "rgba(255, 255, 255, 0.15)",
+                              color: textColor,
+                              outline: "none",
+                            }}
+                            disabled
+                          />
+                        )}
+                      </div>
+                      
+                      {privacyCheckboxEnabled && (
+                        <div style={{ 
+                          display: "flex", 
+                          alignItems: "flex-start", 
+                          gap: "8px",
+                          fontSize: `${fontSize - 2}px`
+                        }}>
+                          <input 
+                            type="checkbox" 
+                            style={{ marginTop: "2px" }}
+                            disabled
+                          />
+                          <span>{privacyCheckboxText}</span>
+                        </div>
+                      )}
+                      
+                      <button
+                        style={{
+                          padding: "12px 28px",
+                          background: buttonBgColor || "rgba(255, 255, 255, 0.95)",
+                          color: buttonTextColor || "#000000",
+                          border: "none",
+                          borderRadius: "6px",
+                          fontSize: `${fontSize}px`,
+                          fontWeight: "600",
+                          cursor: "pointer",
+                          alignSelf: "flex-start",
+                          whiteSpace: "nowrap",
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowEmailSuccess(true);
+                          setTimeout(() => setShowEmailSuccess(false), 5000);
+                        }}
+                      >
+                        {submitButtonText}
+                      </button>
+                    </div>
+                  ) : (
+                    // Success view
+                    <div style={{ 
+                      textAlign: "center",
+                      padding: "12px",
+                      animation: "fadeIn 0.4s ease"
+                    }}>
+                      <div style={{ fontSize: "36px", marginBottom: "8px" }}>✓</div>
+                      <div style={{ fontSize: `${fontSize}px`, fontWeight: "600", marginBottom: "12px" }}>
+                        {successMessage}
+                      </div>
+                      {discountCode && (
+                        <div style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "10px 20px",
+                          background: "rgba(255, 255, 255, 0.2)",
+                          border: "2px dashed rgba(255, 255, 255, 0.5)",
+                          borderRadius: "8px",
+                          marginTop: "8px",
+                        }}>
+                          <span style={{ fontSize: `${fontSize - 1}px`, opacity: 0.9 }}>Your Code:</span>
+                          <span style={{ 
+                            fontSize: `${fontSize + 4}px`, 
+                            fontWeight: "700",
+                            letterSpacing: "1px",
+                            fontFamily: "monospace"
+                          }}>
+                            {discountCode}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
