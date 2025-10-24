@@ -70,6 +70,82 @@
     </button>
   </div>
 </div>
+
+<div id="email-capture-bar" 
+     class="email-capture-bar"
+     data-shop="{{ shop.permanent_domain }}"
+     style="display: none;">
+
+  <div class="email-capture-bar__container">
+    <div class="email-capture-bar__content">
+      <div class="email-capture-bar__form-wrapper">
+        <div class="email-capture-bar__message-container">
+          <span class="email-capture-bar__message" id="email-message"></span>
+        </div>
+
+        <form class="email-capture-bar__form" id="email-form">
+          <div class="email-capture-bar__form-fields">
+            <input 
+              type="email" 
+              class="email-capture-bar__input" 
+              id="email-input" 
+              name="email"
+              placeholder="Enter your email"
+              required
+              aria-label="Email address"
+            />
+            <input 
+              type="text" 
+              class="email-capture-bar__input email-capture-bar__input--name" 
+              id="name-input" 
+              name="name"
+              placeholder="Your name (optional)"
+              style="display: none;"
+              aria-label="Name"
+            />
+          </div>
+
+          <div class="email-capture-bar__privacy" id="privacy-checkbox-container" style="display: none;">
+            <label class="email-capture-bar__privacy-label">
+              <input 
+                type="checkbox" 
+                class="email-capture-bar__checkbox" 
+                id="privacy-checkbox"
+                required
+              />
+              <span class="email-capture-bar__privacy-text" id="privacy-text"></span>
+            </label>
+          </div>
+
+          <div class="email-capture-bar__error" id="email-error" style="display: none;"></div>
+
+          <button 
+            type="submit" 
+            class="email-capture-bar__submit" 
+            id="email-submit"
+          >
+            Get My Discount
+          </button>
+        </form>
+
+        <div class="email-capture-bar__success" id="email-success" style="display: none;">
+          <div class="email-capture-bar__success-icon">✓</div>
+          <div class="email-capture-bar__success-message" id="success-message"></div>
+          <div class="email-capture-bar__discount-code" id="discount-code-container" style="display: none;">
+            <span class="email-capture-bar__discount-label">Your Code:</span>
+            <span class="email-capture-bar__discount-value" id="discount-code"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="email-capture-bar__close" id="close-email-bar" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
 {% schema %}
 {
   "name": "Countdown & CTA Bar",

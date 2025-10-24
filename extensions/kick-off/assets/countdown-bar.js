@@ -268,6 +268,13 @@
     console.warn('Free shipping bar element not found in DOM');
   }
 
+  // --- Logic specifically for EMAIL CAPTURE bars ---
+  const emailBar = document.getElementById('email-capture-bar');
+  
+  if (!emailBar) {
+    console.warn('Email capture bar element not found in DOM');
+  }
+
   // Update progress bar based on cart value
   async function updateShippingProgress(settings) {
     if (!settings || settings.type !== 'shipping') return;
@@ -412,6 +419,200 @@
         sessionStorage.setItem(getSessionKey(settings.id), 'true');
       });
     }
+  }
+
+  // --- Logic specifically for EMAIL CAPTURE bars ---
+  function handleEmailCaptureBar(settings) {
+    if (!emailBar) return;
+
+    // Apply settings specific to email capture bar
+    emailBar.style.backgroundColor = settings.barColor || '#288d40';
+    emailBar.style.color = settings.textColor || '#ffffff';
+    emailBar.className = `email-capture-bar email-capture-bar--${settings.barPosition || 'top'}`;
+
+    // Apply advanced design settings
+    if (settings.fontFamily) {
+      emailBar.style.fontFamily = settings.fontFamily;
+    }
+    if (settings.fontWeight) {
+      const fontWeightMap = { 'normal': '400', 'medium': '500', 'bold': '700' };
+      emailBar.style.fontWeight = fontWeightMap[settings.fontWeight] || settings.fontWeight;
+    }
+    if (settings.textAlign) {
+      emailBar.style.textAlign = settings.textAlign;
+    }
+    if (settings.fontSize) {
+      emailBar.style.fontSize = `${settings.fontSize}px`;
+    }
+    // Apply padding
+    if (settings.paddingTop !== undefined) {
+      emailBar.style.paddingTop = `${settings.paddingTop}px`;
+    }
+    if (settings.paddingBottom !== undefined) {
+      emailBar.style.paddingBottom = `${settings.paddingBottom}px`;
+    }
+    if (settings.paddingLeft !== undefined) {
+      emailBar.style.paddingLeft = `${settings.paddingLeft}px`;
+    }
+    if (settings.paddingRight !== undefined) {
+      emailBar.style.paddingRight = `${settings.paddingRight}px`;
+    }
+    // Apply border
+    if (settings.borderWidth && settings.borderWidth > 0) {
+      emailBar.style.borderWidth = `${settings.borderWidth}px`;
+      emailBar.style.borderStyle = 'solid';
+      emailBar.style.borderColor = settings.borderColor || '#e5e7eb';
+    }
+    if (settings.borderRadius !== undefined) {
+      emailBar.style.borderRadius = `${settings.borderRadius}px`;
+    }
+    // Apply shadow
+    if (settings.shadowStyle && settings.shadowStyle !== 'none') {
+      const shadowMap = {
+        'subtle': '0 2px 4px rgba(0, 0, 0, 0.1)',
+        'medium': '0 4px 12px rgba(0, 0, 0, 0.15)',
+        'strong': '0 8px 24px rgba(0, 0, 0, 0.2)'
+      };
+      emailBar.style.boxShadow = shadowMap[settings.shadowStyle] || shadowMap.medium;
+    }
+
+    // Get form elements
+    const messageEl = document.getElementById('email-message');
+    const emailInput = document.getElementById('email-input');
+    const nameInput = document.getElementById('name-input');
+    const privacyContainer = document.getElementById('privacy-checkbox-container');
+    const privacyCheckbox = document.getElementById('privacy-checkbox');
+    const privacyText = document.getElementById('privacy-text');
+    const submitButton = document.getElementById('email-submit');
+    const emailForm = document.getElementById('email-form');
+    const errorEl = document.getElementById('email-error');
+    const successContainer = document.getElementById('email-success');
+    const successMessage = document.getElementById('success-message');
+    const discountCodeContainer = document.getElementById('discount-code-container');
+    const discountCode = document.getElementById('discount-code');
+
+    // Set content
+    if (messageEl) {
+      messageEl.textContent = settings.message || 'Get 10% Off Your First Order!';
+    }
+    if (emailInput) {
+      emailInput.placeholder = settings.emailPlaceholder || 'Enter your email';
+    }
+    if (nameInput && settings.nameFieldEnabled) {
+      nameInput.style.display = 'block';
+      nameInput.placeholder = settings.namePlaceholder || 'Your name (optional)';
+    }
+    if (privacyContainer && settings.privacyCheckboxEnabled) {
+      privacyContainer.style.display = 'flex';
+      if (privacyText) {
+        privacyText.textContent = settings.privacyCheckboxText || 'I agree to receive marketing emails';
+      }
+    }
+    if (submitButton) {
+      submitButton.textContent = settings.submitButtonText || 'Get My Discount';
+      // Apply button custom colors if provided
+      if (settings.buttonBgColor) {
+        submitButton.style.backgroundColor = settings.buttonBgColor;
+      }
+      if (settings.buttonTextColor) {
+        submitButton.style.color = settings.buttonTextColor;
+      }
+    }
+
+    // Handle form submission
+    if (emailForm) {
+      emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Hide error message
+        if (errorEl) errorEl.style.display = 'none';
+
+        // Get form values
+        const email = emailInput ? emailInput.value.trim() : '';
+        const name = nameInput && nameInput.style.display !== 'none' ? nameInput.value.trim() : '';
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          if (errorEl) {
+            errorEl.textContent = 'Please enter a valid email address';
+            errorEl.style.display = 'block';
+          }
+          return;
+        }
+
+        // Validate privacy checkbox if enabled
+        if (settings.privacyCheckboxEnabled && privacyCheckbox && !privacyCheckbox.checked) {
+          if (errorEl) {
+            errorEl.textContent = 'Please accept the privacy agreement';
+            errorEl.style.display = 'block';
+          }
+          return;
+        }
+
+        // Disable submit button
+        submitButton.disabled = true;
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Submitting...';
+
+        try {
+          // Submit to API
+          const response = await fetch('/api/bars/email-submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              shop: settings.shop,
+              barId: settings.id,
+              email: email,
+              name: name,
+              userAgent: navigator.userAgent
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Hide form, show success message
+            emailForm.style.display = 'none';
+            if (successContainer) {
+              successContainer.style.display = 'block';
+              if (successMessage) {
+                successMessage.textContent = data.message || settings.successMessage || 'Thank you for subscribing!';
+              }
+              // Show discount code if available
+              if (data.discountCode && discountCodeContainer && discountCode) {
+                discountCodeContainer.style.display = 'flex';
+                discountCode.textContent = data.discountCode;
+              }
+            }
+
+            // Track email submission
+            trackEvent('email_submitted', settings, { email: email });
+          } else {
+            // Show error message
+            if (errorEl) {
+              errorEl.textContent = data.error || 'Unable to submit email. Please try again.';
+              errorEl.style.display = 'block';
+            }
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+          }
+        } catch (error) {
+          console.error('Email submission error:', error);
+          if (errorEl) {
+            errorEl.textContent = 'Network error. Please try again.';
+            errorEl.style.display = 'block';
+          }
+          submitButton.disabled = false;
+          submitButton.textContent = originalButtonText;
+        }
+      });
+    }
+
+    // Display the email bar
+    emailBar.style.display = 'flex';
   }
 
   function handleCountdownEnd(settings) {
@@ -630,6 +831,9 @@
         } else if (settings.type === 'shipping') {
           console.log("Handling as: Free Shipping Bar");
           handleFreeShippingBar(settings);
+        } else if (settings.type === 'email') {
+          console.log("Handling as: Email Capture Bar");
+          handleEmailCaptureBar(settings);
         } else {
           console.log("Handling as: Announcement Bar");
           handleAnnouncementBar(settings);
@@ -638,14 +842,26 @@
         // Track bar impression
         trackEvent('bar_impression', settings);
 
-        // Setup close button
-        const closeBtn = document.getElementById('close-bar');
+        // Setup close button (use appropriate close button based on bar type)
+        const closeBtn = settings.type === 'shipping' 
+          ? document.getElementById('close-shipping-bar')
+          : settings.type === 'email'
+          ? document.getElementById('close-email-bar')
+          : document.getElementById('close-bar');
         if (closeBtn) {
           closeBtn.addEventListener('click', () => {
             // Track bar close
             trackEvent('bar_closed', settings);
             
-            bar.style.display = 'none';
+            // Hide appropriate bar
+            if (settings.type === 'shipping') {
+              shippingBar.style.display = 'none';
+            } else if (settings.type === 'email') {
+              emailBar.style.display = 'none';
+            } else {
+              bar.style.display = 'none';
+            }
+            
             sessionStorage.setItem(sessionKey, 'true');
             if (countdownInterval) clearInterval(countdownInterval);
           });
