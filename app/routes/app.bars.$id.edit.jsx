@@ -18,8 +18,8 @@ import {
   Form,
   useParams,
 } from "react-router-dom";
-import { authenticate } from "../../shopify.server";
-import db from "../../db.server";
+import { authenticate } from "../shopify.server";
+import db from "../db.server";
 import {
   BarTypeSelection,
   ContentConfiguration,
