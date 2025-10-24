@@ -2,6 +2,7 @@ export { BarTypeSelection } from "./BarTypeSelection";
 export { ContentConfiguration } from "./ContentConfiguration";
 export { CountdownConfiguration } from "./CountdownConfiguration";
 export { FreeShippingConfiguration } from "./FreeShippingConfiguration";
+export { EmailCaptureConfiguration } from "./EmailCaptureConfiguration";
 export { DesignCustomization } from "./DesignCustomization";
 export { TargetingSchedule } from "./TargetingSchedule";
 export { TargetingRules } from "./TargetingRules";

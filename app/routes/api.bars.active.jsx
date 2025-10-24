@@ -107,6 +107,12 @@ export const loader = async ({ request }) => {
         if (!bar.shippingGoalText || !bar.shippingReachedText) return false;
       }
       
+      // Validate email capture bar configuration
+      if (bar.type === "email") {
+        if (!bar.submitButtonText) return false;
+        if (!bar.successMessage) return false;
+      }
+      
       return true;
     });
 
@@ -178,6 +184,18 @@ export const loader = async ({ request }) => {
         shippingReachedText: bar.shippingReachedText,
         shippingProgressColor: bar.shippingProgressColor || "#4ade80",
         shippingShowIcon: bar.shippingShowIcon !== false,
+      }),
+      
+      // Email capture settings (only for email bars)
+      ...(bar.type === "email" && {
+        emailPlaceholder: bar.emailPlaceholder || "Enter your email",
+        namePlaceholder: bar.namePlaceholder || "Your name (optional)",
+        nameFieldEnabled: bar.nameFieldEnabled || false,
+        submitButtonText: bar.submitButtonText,
+        successMessage: bar.successMessage,
+        discountCode: bar.discountCode || null,
+        privacyCheckboxEnabled: bar.privacyCheckboxEnabled || false,
+        privacyCheckboxText: bar.privacyCheckboxText || "I agree to receive marketing emails",
       }),
     }));
 

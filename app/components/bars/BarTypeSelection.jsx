@@ -59,6 +59,19 @@ export function BarTypeSelection({ value, onChange }) {
               />
             </div>
           </Card>
+
+          <Card>
+            <div style={{ padding: "16px" }}>
+              <RadioButton
+                label="Email Capture Form"
+                helpText="Collect visitor emails with optional discount code reveal and privacy compliance"
+                checked={selectedType === "email"}
+                id="email"
+                name="barType"
+                onChange={() => handleChange("email")}
+              />
+            </div>
+          </Card>
         </LegacyStack>
       </LegacyStack>
     </Card>

@@ -25,6 +25,7 @@ import {
   ContentConfiguration,
   CountdownConfiguration,
   FreeShippingConfiguration,
+  EmailCaptureConfiguration,
   DesignCustomization,
   TargetingSchedule,
   TargetingRules,
@@ -105,6 +106,21 @@ function validateBarData(data, currentStep) {
       if (!data.shippingCurrency || data.shippingCurrency.trim() === "") {
         errors.shippingCurrency = "Currency is required for free shipping bars";
       }
+    } else if (data.type === "email") {
+      // Rule for Email Capture Bars: Submit button text and success message are required
+      if (!data.submitButtonText || data.submitButtonText.trim() === "") {
+        errors.submitButtonText = "Submit button text is required for email capture bars";
+      }
+      if (!data.successMessage || data.successMessage.trim() === "") {
+        errors.successMessage = "Success message is required for email capture bars";
+      }
+      if (!data.message || data.message.trim() === "") {
+        errors.message = "Headline message is required for email capture bars";
+      }
+      // Validate privacy checkbox text if enabled
+      if (data.privacyCheckboxEnabled && (!data.privacyCheckboxText || data.privacyCheckboxText.trim() === "")) {
+        errors.privacyCheckboxText = "Privacy checkbox text is required when privacy checkbox is enabled";
+      }
     }
   }
 
@@ -180,6 +196,15 @@ export const action = async ({ request, params }) => {
       shippingReachedText: formData.get("shippingReachedText") || null,
       shippingProgressColor: formData.get("shippingProgressColor") || null,
       shippingShowIcon: formData.get("shippingShowIcon") === "true",
+      // Email capture fields
+      emailPlaceholder: formData.get("emailPlaceholder") || null,
+      namePlaceholder: formData.get("namePlaceholder") || null,
+      nameFieldEnabled: formData.get("nameFieldEnabled") === "true",
+      submitButtonText: formData.get("submitButtonText") || null,
+      successMessage: formData.get("successMessage") || null,
+      discountCode: formData.get("discountCode") || null,
+      privacyCheckboxEnabled: formData.get("privacyCheckboxEnabled") === "true",
+      privacyCheckboxText: formData.get("privacyCheckboxText") || null,
       fontFamily: formData.get("fontFamily") || "system-ui, -apple-system, sans-serif",
       fontWeight: formData.get("fontWeight") || "normal",
       textAlign: formData.get("textAlign") || "center",
@@ -276,6 +301,15 @@ export default function EditBarPage() {
     shippingReachedText: loadedBar.shippingReachedText || "You've unlocked free shipping! 🎉",
     shippingProgressColor: loadedBar.shippingProgressColor || "#4ade80",
     shippingShowIcon: loadedBar.shippingShowIcon !== false,
+    // Email capture fields
+    emailPlaceholder: loadedBar.emailPlaceholder || "Enter your email",
+    namePlaceholder: loadedBar.namePlaceholder || "Your name (optional)",
+    nameFieldEnabled: loadedBar.nameFieldEnabled || false,
+    submitButtonText: loadedBar.submitButtonText || "Get My Discount",
+    successMessage: loadedBar.successMessage || "Thank you! Check your email for your discount code.",
+    discountCode: loadedBar.discountCode || "",
+    privacyCheckboxEnabled: loadedBar.privacyCheckboxEnabled || false,
+    privacyCheckboxText: loadedBar.privacyCheckboxText || "I agree to receive marketing emails",
     fontFamily: loadedBar.fontFamily || "system-ui, -apple-system, sans-serif",
     fontWeight: loadedBar.fontWeight || "normal",
     textAlign: loadedBar.textAlign || "center",
@@ -392,6 +426,13 @@ export default function EditBarPage() {
         } else if (formData.type === "shipping") {
           return (
             <FreeShippingConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+          );
+        } else if (formData.type === "email") {
+          return (
+            <EmailCaptureConfiguration
               formData={formData}
               onChange={setFormData}
             />

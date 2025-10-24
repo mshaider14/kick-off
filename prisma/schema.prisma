@@ -69,6 +69,16 @@ model Bar {
   shippingProgressColor String?  // Color for progress bar fill
   shippingShowIcon      Boolean  @default(true) // Show shipping truck icon
   
+  // Email capture bar fields
+  emailPlaceholder      String?  // Placeholder text for email field
+  namePlaceholder       String?  // Placeholder text for name field
+  nameFieldEnabled      Boolean  @default(false) // Show optional name field
+  submitButtonText      String?  // Submit button text (e.g., "Get My Discount")
+  successMessage        String?  // Message shown after successful submission
+  discountCode          String?  // Discount code to reveal after submission
+  privacyCheckboxEnabled Boolean @default(false) // Require privacy compliance checkbox
+  privacyCheckboxText   String?  // Privacy checkbox label text
+  
   // Advanced design customization fields
   fontFamily      String?  @default("system-ui, -apple-system, sans-serif")
   fontWeight      String?  @default("normal") // "normal", "medium", "bold"
@@ -97,6 +107,7 @@ model Bar {
   
   views           BarView[]
   clicks          BarClick[]
+  emails          EmailSubmission[]
   
   @@index([shop])
   @@index([shop, isActive])
@@ -127,6 +138,24 @@ model BarClick {
   
   @@index([barId])
   @@index([shop])
+  @@index([timestamp])
+  @@index([shop, timestamp])
+}
+
+model EmailSubmission {
+  id        String   @id @default(cuid())
+  barId     String
+  bar       Bar      @relation(fields: [barId], references: [id], onDelete: Cascade)
+  shop      String
+  email     String
+  name      String?
+  timestamp DateTime @default(now())
+  userAgent String?
+  
+  @@index([barId])
+  @@index([shop])
+  @@index([email])
+  @@index([shop, email])
   @@index([timestamp])
   @@index([shop, timestamp])
 }
