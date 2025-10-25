@@ -16,7 +16,6 @@ import {
   useNavigate,
   useSubmit,
   Form,
-  useParams,
 } from "react-router-dom";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";

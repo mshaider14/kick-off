@@ -586,6 +586,16 @@ BarPreview.propTypes = {
     shippingReachedText: PropTypes.string,
     shippingProgressColor: PropTypes.string,
     shippingShowIcon: PropTypes.bool,
+    // Email capture fields
+    emailPlaceholder: PropTypes.string,
+    namePlaceholder: PropTypes.string,
+    nameFieldEnabled: PropTypes.bool,
+    submitButtonText: PropTypes.string,
+    successMessage: PropTypes.string,
+    discountCode: PropTypes.string,
+    privacyCheckboxEnabled: PropTypes.bool,
+    privacyCheckboxText: PropTypes.string,
+    // Design fields
     fontFamily: PropTypes.string,
     fontWeight: PropTypes.string,
     textAlign: PropTypes.string,

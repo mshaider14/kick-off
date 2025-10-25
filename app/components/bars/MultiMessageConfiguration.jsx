@@ -5,7 +5,6 @@ import {
   LegacyStack, 
   Text, 
   Button,
-  ButtonGroup,
   Select,
   Banner,
   Icon
@@ -124,11 +123,19 @@ export function MultiMessageConfiguration({ formData, onChange }) {
             {messages.map((msg, index) => (
               <div
                 key={index}
+                role="button"
+                tabIndex={0}
                 draggable
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
                 onClick={() => setSelectedMessageIndex(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setSelectedMessageIndex(index);
+                  }
+                }}
                 style={{
                   padding: "12px 16px",
                   backgroundColor: selectedMessageIndex === index ? "#f0f8ff" : "#ffffff",
