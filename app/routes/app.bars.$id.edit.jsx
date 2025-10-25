@@ -23,6 +23,7 @@ import db from "../db.server";
 import {
   BarTypeSelection,
   ContentConfiguration,
+  MultiMessageConfiguration,
   CountdownConfiguration,
   FreeShippingConfiguration,
   EmailCaptureConfiguration,
@@ -224,6 +225,10 @@ export const action = async ({ request, params }) => {
       targetSpecificUrls: formData.get("targetSpecificUrls") || null,
       targetUrlPattern: formData.get("targetUrlPattern") || null,
       displayFrequency: formData.get("displayFrequency") || "always",
+      // Multi-message fields
+      messages: formData.get("messages") || null,
+      rotationSpeed: formData.get("rotationSpeed") ? parseInt(formData.get("rotationSpeed"), 10) : null,
+      transitionType: formData.get("transitionType") || null,
     };
 
     // Validate
@@ -329,6 +334,11 @@ export default function EditBarPage() {
     targetSpecificUrls: loadedBar.targetSpecificUrls || "",
     targetUrlPattern: loadedBar.targetUrlPattern || JSON.stringify({ type: "contains", value: "" }),
     displayFrequency: loadedBar.displayFrequency || "always",
+    // Multi-message fields
+    useMultiMessage: loadedBar.messages ? true : false,
+    messages: loadedBar.messages || "",
+    rotationSpeed: loadedBar.rotationSpeed || 5,
+    transitionType: loadedBar.transitionType || "fade",
   });
 
   const steps = [
@@ -439,10 +449,20 @@ export default function EditBarPage() {
           );
         }
         return (
-          <ContentConfiguration
-            formData={formData}
-            onChange={setFormData}
-          />
+          <>
+            <ContentConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+            {formData.useMultiMessage && (
+              <div style={{ marginTop: "16px" }}>
+                <MultiMessageConfiguration
+                  formData={formData}
+                  onChange={setFormData}
+                />
+              </div>
+            )}
+          </>
         );
       case 3:
         return (

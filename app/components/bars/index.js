@@ -1,5 +1,6 @@
 export { BarTypeSelection } from "./BarTypeSelection";
 export { ContentConfiguration } from "./ContentConfiguration";
+export { MultiMessageConfiguration } from "./MultiMessageConfiguration";
 export { CountdownConfiguration } from "./CountdownConfiguration";
 export { FreeShippingConfiguration } from "./FreeShippingConfiguration";
 export { EmailCaptureConfiguration } from "./EmailCaptureConfiguration";

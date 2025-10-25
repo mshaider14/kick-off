@@ -46,6 +46,11 @@ export function BarPreview({ formData }) {
     buttonTextColor,
     buttonBorder,
     shadowStyle = "none",
+    // Multi-message fields
+    useMultiMessage = false,
+    messages,
+    rotationSpeed = 5,
+    transitionType = "fade",
   } = formData;
 
   const [countdownValues, setCountdownValues] = useState({
@@ -61,6 +66,28 @@ export function BarPreview({ formData }) {
   
   // Email capture preview state
   const [showEmailSuccess, setShowEmailSuccess] = useState(false);
+
+  // Multi-message rotation state
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Parse messages array
+  const parsedMessages = messages 
+    ? (typeof messages === 'string' ? JSON.parse(messages) : messages)
+    : null;
+
+  // Get current message for multi-message mode
+  const currentMultiMessage = parsedMessages && parsedMessages[currentMessageIndex] 
+    ? parsedMessages[currentMessageIndex] 
+    : null;
+
+  // Display message and CTA based on mode
+  const displayMessage = useMultiMessage && currentMultiMessage 
+    ? currentMultiMessage.message 
+    : message;
+  const displayCtaText = useMultiMessage && currentMultiMessage 
+    ? currentMultiMessage.ctaText 
+    : ctaText;
 
   // Parse timer format
   let format = { showDays: true, showHours: true, showMinutes: true, showSeconds: true };
@@ -143,6 +170,26 @@ export function BarPreview({ formData }) {
 
     return () => clearInterval(interval);
   }, [type, timerType, timerEndDate, timerDailyTime, timerDuration]);
+
+  // Multi-message rotation effect
+  useEffect(() => {
+    if (!useMultiMessage || !parsedMessages || parsedMessages.length <= 1) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentMessageIndex((prevIndex) => 
+          (prevIndex + 1) % parsedMessages.length
+        );
+        setIsTransitioning(false);
+      }, transitionType === "fade" ? 300 : 500);
+    }, (rotationSpeed || 5) * 1000);
+
+    return () => clearInterval(interval);
+  }, [useMultiMessage, parsedMessages, rotationSpeed, transitionType]);
 
   // Helper to get shadow style
   const getShadowStyle = (style) => {
@@ -447,7 +494,17 @@ export function BarPreview({ formData }) {
               ) : (
                 // Announcement or Countdown Bar
                 <>
-                  <span>{message}</span>
+                  <span style={{
+                    opacity: isTransitioning ? 0 : 1,
+                    transition: transitionType === "fade" 
+                      ? "opacity 0.3s ease-in-out" 
+                      : "opacity 0.3s ease-in-out, transform 0.5s ease-in-out",
+                    transform: isTransitioning && transitionType === "slide" 
+                      ? "translateX(-20px)" 
+                      : "translateX(0)"
+                  }}>
+                    {displayMessage}
+                  </span>
 
                   {type === "countdown" && (
                     <div style={timerStyle}>
@@ -487,7 +544,7 @@ export function BarPreview({ formData }) {
                     </div>
                   )}
 
-                  {ctaText && <button style={buttonStyle}>{ctaText}</button>}
+                  {displayCtaText && <button style={buttonStyle}>{displayCtaText}</button>}
                 </>
               )}
             </div>
@@ -495,7 +552,10 @@ export function BarPreview({ formData }) {
 
           <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f9fafb", borderRadius: "6px" }}>
             <Text variant="bodySm" as="p" color="subdued">
-              💡 <strong>Preview Tip:</strong> {type === "shipping" 
+              💡 <strong>Preview Tip:</strong> {
+                useMultiMessage && parsedMessages && parsedMessages.length > 1
+                  ? `Messages will rotate every ${rotationSpeed} seconds with a ${transitionType} transition. Currently showing message ${currentMessageIndex + 1} of ${parsedMessages.length}.`
+                  : type === "shipping" 
                 ? "The progress bar animates through different cart values. In production, it will sync with the actual cart value." 
                 : "This is how your bar will appear on your storefront. Colors, text, and spacing will match this preview exactly."}
             </Text>
@@ -540,5 +600,10 @@ BarPreview.propTypes = {
     buttonTextColor: PropTypes.string,
     buttonBorder: PropTypes.string,
     shadowStyle: PropTypes.string,
+    // Multi-message fields
+    useMultiMessage: PropTypes.bool,
+    messages: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    rotationSpeed: PropTypes.number,
+    transitionType: PropTypes.string,
   }).isRequired,
 };
