@@ -569,10 +569,16 @@
   display: block;
 }
 
+/* Email Capture Form - Responsive Layout */
 .email-capture-bar__form {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  align-items: center; /* Vertically align items in the row */
+  justify-content: center; /* Center items horizontally */
+  gap: 10px 15px; /* Row-gap 10px, Column-gap 15px */
+  width: 100%;
+  max-width: 800px; /* Limit max width for desktop for better aesthetics */
+  margin: 0 auto; /* Center the form within its container */
 }
 
 .email-capture-bar__form-fields {
@@ -583,16 +589,27 @@
 }
 
 .email-capture-bar__input {
-  flex: 1;
-  min-width: 250px;
-  padding: 10px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  flex-grow: 1; /* Allow inputs to grow and fill available space */
+  min-width: 200px; /* Ensure inputs don't become too small on medium screens */
+  max-width: 300px; /* Prevent inputs from becoming too wide */
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Lighter border for contrast */
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+  color: inherit; /* Inherit text color from bar */
   font-size: 14px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+  line-height: 1.5;
+  transition: all 0.2s ease-in-out;
+}
+
+.email-capture-bar__input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.email-capture-bar__input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .email-capture-bar__input::placeholder {
@@ -648,17 +665,27 @@
 }
 
 .email-capture-bar__submit {
-  padding: 12px 28px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #000000;
+  flex-shrink: 0; /* Prevent button from shrinking */
+  padding: 10px 20px;
   border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease;
-  align-self: flex-start;
-  white-space: nowrap;
+  transition: all 0.2s ease-in-out;
+  /* Default colors, overridden by bar settings */
+  background-color: #ffffff; 
+  color: #288d40; 
+}
+
+.email-capture-bar__submit:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.email-capture-bar__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .email-capture-bar__submit:hover {
@@ -839,4 +866,112 @@
 .email-capture-bar[data-loading="true"] {
   visibility: hidden;
   pointer-events: none;
+}
+
+/* Privacy Checkbox Styling for better layout */
+.email-capture-bar__privacy {
+  display: flex; /* Ensure checkbox and text are in a row */
+  align-items: center;
+  gap: 8px; /* Space between checkbox and text */
+  flex-basis: 100%; /* Make privacy checkbox take full width on its own row */
+  justify-content: center; /* Center the privacy text */
+}
+
+.email-capture-bar__privacy-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px; /* Slightly smaller font for privacy text */
+  color: rgba(255, 255, 255, 0.8); /* Subdued text color */
+  line-height: 1.4;
+}
+
+.email-capture-bar__checkbox {
+  flex-shrink: 0; /* Prevent checkbox from shrinking */
+  width: 16px;
+  height: 16px;
+  margin: 0; /* Reset default margin */
+  cursor: pointer;
+  accent-color: var(--email-bar-checkbox-color, #ffffff); /* Use CSS variable for customization */
+}
+
+/* Error message styling */
+.email-capture-bar__error {
+  flex-basis: 100%; /* Take full width */
+  text-align: center;
+  color: #ffcccc; /* Light red for error */
+  font-size: 13px;
+  margin-top: -5px; /* Adjust spacing */
+}
+
+/* Success State Styling */
+.email-capture-bar__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.email-capture-bar__success-icon {
+  font-size: 32px;
+  color: #4CAF50; /* Green checkmark */
+  animation: scaleIn 0.3s ease-out;
+}
+
+.email-capture-bar__discount-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
+
+.email-capture-bar__discount-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.email-capture-bar__discount-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+
+/* --- Responsive adjustments for smaller screens --- */
+@media (max-width: 768px) {
+  .email-capture-bar__form {
+    flex-direction: column; /* Stack fields vertically on tablets */
+    gap: 10px; /* Adjust gap for vertical stacking */
+  }
+
+  .email-capture-bar__input,
+  .email-capture-bar__submit {
+    max-width: 100%; /* Allow inputs/button to take full width */
+    width: 100%;
+  }
+
+  /* Adjust padding for overall bar on smaller screens if necessary */
+  .email-capture-bar__container {
+    padding: 10px 15px; /* Slightly less padding on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Further adjustments for mobile phones */
+  .email-capture-bar__message {
+    font-size: 16px; /* Slightly smaller message font */
+  }
+
+  .email-capture-bar__input,
+  .email-capture-bar__submit {
+    font-size: 13px; /* Smaller font for inputs/buttons */
+    padding: 10px;
+  }
 }

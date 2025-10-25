@@ -124,6 +124,17 @@ export const loader = async ({ request }) => {
         shippingProgressColor: bar.shippingProgressColor || "#4ade80",
         shippingShowIcon: bar.shippingShowIcon !== false,
       }),
+      // Conditionally add email settings ONLY if it's an email bar
+      ...(bar.type === "email" && {
+        emailPlaceholder: bar.emailPlaceholder || "Enter your email",
+        namePlaceholder: bar.namePlaceholder || "Your name (optional)",
+        nameFieldEnabled: bar.nameFieldEnabled || false,
+        submitButtonText: bar.submitButtonText,
+        successMessage: bar.successMessage,
+        discountCode: bar.discountCode || null,
+        privacyCheckboxEnabled: bar.privacyCheckboxEnabled || false,
+        privacyCheckboxText: bar.privacyCheckboxText || "I agree to receive marketing emails",
+      }),
     };
 
     return json({ success: true, settings }, { headers: { "Cache-Control": "public, max-age=60" } });

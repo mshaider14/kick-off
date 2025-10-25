@@ -502,10 +502,16 @@
       nameInput.style.display = 'block';
       nameInput.placeholder = settings.namePlaceholder || 'Your name (optional)';
     }
-    if (privacyContainer && settings.privacyCheckboxEnabled) {
-      privacyContainer.style.display = 'flex';
-      if (privacyText) {
-        privacyText.textContent = settings.privacyCheckboxText || 'I agree to receive marketing emails';
+    if (privacyContainer && privacyCheckbox) {
+      if (settings.privacyCheckboxEnabled) {
+        privacyContainer.style.display = 'flex';
+        privacyCheckbox.required = true;
+        if (privacyText) {
+          privacyText.textContent = settings.privacyCheckboxText || 'I agree to receive marketing emails';
+        }
+      } else {
+        privacyContainer.style.display = 'none';
+        privacyCheckbox.required = false;
       }
     }
     if (submitButton) {
@@ -557,7 +563,7 @@
 
         try {
           // Submit to API
-          const response = await fetch('/api/bars/email-submit', {
+          const response = await fetch('/apps/countdown/email-submit', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
