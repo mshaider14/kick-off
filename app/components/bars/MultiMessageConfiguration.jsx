@@ -125,6 +125,7 @@ export function MultiMessageConfiguration({ formData, onChange }) {
                 key={index}
                 role="button"
                 tabIndex={0}
+                aria-label={`Select message ${index + 1}: ${msg.message || 'Empty message'}`}
                 draggable
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
