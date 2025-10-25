@@ -149,10 +149,116 @@
     }
   }
 
+  // --- Multi-message rotation logic ---
+  let messageRotationInterval = null;
+  let currentMessageIndex = 0;
+
+  // Helper function to update message and CTA during rotation
+  function updateRotatingMessage(messageEl, buttonEl, message, transitionType) {
+    if (!message) return;
+
+    // Apply transition
+    if (transitionType === 'fade') {
+      messageEl.style.transition = 'opacity 0.3s ease-in-out';
+      if (buttonEl) buttonEl.style.transition = 'opacity 0.3s ease-in-out';
+      
+      messageEl.style.opacity = '0';
+      if (buttonEl) buttonEl.style.opacity = '0';
+
+      setTimeout(() => {
+        messageEl.textContent = message.message || '';
+        
+        if (message.ctaText && message.ctaLink && buttonEl) {
+          buttonEl.textContent = message.ctaText;
+          buttonEl.href = message.ctaLink;
+          buttonEl.style.display = 'block';
+        } else if (buttonEl) {
+          buttonEl.style.display = 'none';
+        }
+
+        messageEl.style.opacity = '1';
+        if (buttonEl && message.ctaText) buttonEl.style.opacity = '1';
+      }, 300);
+    } else if (transitionType === 'slide') {
+      messageEl.style.transition = 'transform 0.5s ease-in-out, opacity 0.3s ease-in-out';
+      if (buttonEl) buttonEl.style.transition = 'transform 0.5s ease-in-out, opacity 0.3s ease-in-out';
+      
+      messageEl.style.transform = 'translateX(-20px)';
+      messageEl.style.opacity = '0';
+      if (buttonEl) {
+        buttonEl.style.transform = 'translateX(-20px)';
+        buttonEl.style.opacity = '0';
+      }
+
+      setTimeout(() => {
+        messageEl.textContent = message.message || '';
+        
+        if (message.ctaText && message.ctaLink && buttonEl) {
+          buttonEl.textContent = message.ctaText;
+          buttonEl.href = message.ctaLink;
+          buttonEl.style.display = 'block';
+        } else if (buttonEl) {
+          buttonEl.style.display = 'none';
+        }
+
+        messageEl.style.transform = 'translateX(0)';
+        messageEl.style.opacity = '1';
+        if (buttonEl && message.ctaText) {
+          buttonEl.style.transform = 'translateX(0)';
+          buttonEl.style.opacity = '1';
+        }
+      }, 500);
+    }
+  }
+
+  function initializeMultiMessageRotation(settings) {
+    // Check if multi-message is enabled
+    if (!settings.messages) return null;
+
+    try {
+      const messages = JSON.parse(settings.messages);
+      if (!Array.isArray(messages) || messages.length <= 1) return null;
+
+      const rotationSpeed = (settings.rotationSpeed || 5) * 1000; // Convert to milliseconds
+      const transitionType = settings.transitionType || 'fade';
+      
+      const messageEl = bar.querySelector('.countdown-bar__message');
+      const buttonEl = document.getElementById('cta-button');
+      
+      if (!messageEl) return null;
+
+      // Set initial message
+      updateRotatingMessage(messageEl, buttonEl, messages[currentMessageIndex], transitionType);
+
+      // Start rotation
+      messageRotationInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+        updateRotatingMessage(messageEl, buttonEl, messages[currentMessageIndex], transitionType);
+      }, rotationSpeed);
+
+      return messageRotationInterval;
+    } catch (e) {
+      console.error('Error parsing messages for rotation:', e);
+      return null;
+    }
+  }
+
+  function stopMultiMessageRotation() {
+    if (messageRotationInterval) {
+      clearInterval(messageRotationInterval);
+      messageRotationInterval = null;
+      currentMessageIndex = 0;
+    }
+  }
+
   // --- Logic specifically for ANNOUNCEMENT bars ---
-  function handleAnnouncementBar() {
+  function handleAnnouncementBar(settings) {
     const timerEl = document.getElementById('countdown-timer');
     if (timerEl) timerEl.style.display = 'none'; // Hide the timer section.
+    
+    // Initialize multi-message rotation if enabled
+    initializeMultiMessageRotation(settings);
+    
     bar.style.display = 'flex';
   }
 
@@ -802,7 +908,7 @@
   };
   
   fetchBars()
-    .then(({ bars, multiBar }) => {
+    .then(({ bars }) => {
       console.log("BAR DATA RECEIVED:", bars);
       
       if (!bars || bars.length === 0) {
@@ -870,6 +976,7 @@
             
             sessionStorage.setItem(sessionKey, 'true');
             if (countdownInterval) clearInterval(countdownInterval);
+            stopMultiMessageRotation(); // Stop message rotation when bar is closed
           });
         }
         

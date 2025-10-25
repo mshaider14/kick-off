@@ -1,6 +1,5 @@
 import {
   Page,
-  Layout,
   LegacyStack,
   Button,
   Toast,
@@ -22,6 +21,7 @@ import db from "../db.server";
 import {
   BarTypeSelection,
   ContentConfiguration,
+  MultiMessageConfiguration,
   CountdownConfiguration,
   FreeShippingConfiguration,
   EmailCaptureConfiguration,
@@ -438,6 +438,10 @@ export const action = async ({ request }) => {
       targetSpecificUrls: formData.get("targetSpecificUrls") || null,
       targetUrlPattern: formData.get("targetUrlPattern") || null,
       displayFrequency: formData.get("displayFrequency") || "always",
+      // Multi-message fields
+      messages: formData.get("messages") || null,
+      rotationSpeed: formData.get("rotationSpeed") ? parseInt(formData.get("rotationSpeed"), 10) : null,
+      transitionType: formData.get("transitionType") || null,
     };
 
     // Validate
@@ -545,6 +549,11 @@ export default function NewBarPage() {
     targetSpecificUrls: "",
     targetUrlPattern: JSON.stringify({ type: "contains", value: "" }),
     displayFrequency: "always",
+    // Multi-message fields
+    useMultiMessage: false,
+    messages: "",
+    rotationSpeed: 5,
+    transitionType: "fade",
   });
 
   const steps = [
@@ -717,6 +726,16 @@ export default function NewBarPage() {
       formDataToSubmit.append("targetSpecificUrls", formData.targetSpecificUrls || "");
       formDataToSubmit.append("targetUrlPattern", formData.targetUrlPattern || "");
       formDataToSubmit.append("displayFrequency", formData.displayFrequency || "always");
+      // Multi-message fields
+      if (formData.messages) {
+        formDataToSubmit.append("messages", formData.messages);
+      }
+      if (formData.rotationSpeed) {
+        formDataToSubmit.append("rotationSpeed", formData.rotationSpeed.toString());
+      }
+      if (formData.transitionType) {
+        formDataToSubmit.append("transitionType", formData.transitionType);
+      }
       submit(formDataToSubmit, { method: "post" });
     },
     [formData, submit]
@@ -858,11 +877,23 @@ export default function NewBarPage() {
             />
           );
         }
+        // For announcement bars, show ContentConfiguration with multi-message toggle
+        // or MultiMessageConfiguration if multi-message is enabled
         return (
-          <ContentConfiguration
-            formData={formData}
-            onChange={setFormData}
-          />
+          <>
+            <ContentConfiguration
+              formData={formData}
+              onChange={setFormData}
+            />
+            {formData.useMultiMessage && (
+              <div style={{ marginTop: "16px" }}>
+                <MultiMessageConfiguration
+                  formData={formData}
+                  onChange={setFormData}
+                />
+              </div>
+            )}
+          </>
         );
       case 3:
         return (
