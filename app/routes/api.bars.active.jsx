@@ -134,6 +134,12 @@ export const loader = async ({ request }) => {
       ctaLink: bar.ctaLink,
       backgroundColor: bar.backgroundColor,
       textColor: bar.textColor,
+      // Multi-message rotation fields
+      messages: bar.messages,
+      rotationSpeed: bar.rotationSpeed,
+      transitionType: bar.transitionType,
+      backgroundColor: bar.backgroundColor,
+      textColor: bar.textColor,
       fontSize: bar.fontSize,
       position: bar.position,
       

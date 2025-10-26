@@ -9,7 +9,7 @@ import {
   Banner,
   Icon
 } from "@shopify/polaris";
-import { DeleteMinor, DragHandleMinor } from "@shopify/polaris-icons";
+import { DeleteIcon, DragHandleIcon } from "@shopify/polaris-icons";
 import PropTypes from "prop-types";
 import { useState, useCallback } from "react";
 
@@ -160,7 +160,7 @@ export function MultiMessageConfiguration({ formData, onChange }) {
                 }}
               >
                 <div style={{ cursor: "grab", color: "#666" }}>
-                  <Icon source={DragHandleMinor} />
+                  <Icon source={DragHandleIcon} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <Text variant="bodyMd" as="p" fontWeight={selectedMessageIndex === index ? "semibold" : "regular"}>
@@ -186,7 +186,7 @@ export function MultiMessageConfiguration({ formData, onChange }) {
                   <Button
                     plain
                     destructive
-                    icon={DeleteMinor}
+                    icon={DeleteIcon}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteMessage(index);

@@ -57,7 +57,24 @@ function validateBarData(data, currentStep) {
 
   if (currentStep === 2) {
     if (data.type === "announcement") {
-      if (!data.message || data.message.trim() === "") {
+      // Rule for Announcement Bars: Message is required.
+      // Check if using multi-message mode
+      if (data.useMultiMessage && data.messages) {
+        try {
+          const messages = typeof data.messages === 'string' ? JSON.parse(data.messages) : data.messages;
+          if (!messages || messages.length === 0) {
+            errors.message = "At least one message is required for announcement bars";
+          } else {
+            // Check if all messages have content
+            const emptyMessages = messages.filter(msg => !msg.message || msg.message.trim() === "");
+            if (emptyMessages.length > 0) {
+              errors.message = "All messages must have content";
+            }
+          }
+        } catch (e) {
+          errors.message = "Invalid message format";
+        }
+      } else if (!data.message || data.message.trim() === "") {
         errors.message = "Message is required for announcement bars";
       }
       if (data.ctaText && data.ctaText.trim() !== "") {

@@ -80,6 +80,10 @@ export const loader = async ({ request }) => {
       barMessage: bar.message,
       buttonText: bar.ctaText,
       buttonLink: bar.ctaLink,
+      // Multi-message rotation fields
+      messages: bar.messages,
+      rotationSpeed: bar.rotationSpeed,
+      transitionType: bar.transitionType,
       barColor: bar.backgroundColor,
       textColor: bar.textColor,
       barPosition: bar.position,

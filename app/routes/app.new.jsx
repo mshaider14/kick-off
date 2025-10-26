@@ -48,7 +48,23 @@ function validateBarData(data, currentStep) {
   if (currentStep === 2) {
     if (data.type === "announcement") {
       // Rule for Announcement Bars: Message is required.
-      if (!data.message || data.message.trim() === "") {
+      // Check if using multi-message mode
+      if (data.useMultiMessage && data.messages) {
+        try {
+          const messages = typeof data.messages === 'string' ? JSON.parse(data.messages) : data.messages;
+          if (!messages || messages.length === 0) {
+            errors.message = "At least one message is required for announcement bars";
+          } else {
+            // Check if all messages have content
+            const emptyMessages = messages.filter(msg => !msg.message || msg.message.trim() === "");
+            if (emptyMessages.length > 0) {
+              errors.message = "All messages must have content";
+            }
+          }
+        } catch (e) {
+          errors.message = "Invalid message format";
+        }
+      } else if (!data.message || data.message.trim() === "") {
         errors.message = "Message is required for announcement bars";
       }
       // Validate CTA link if CTA text is provided
@@ -650,7 +666,7 @@ export default function NewBarPage() {
 
       const formDataToSubmit = new FormData();
       formDataToSubmit.append("type", formData.type);
-      formDataToSubmit.append("message", formData.message);
+      formDataToSubmit.append("message", formData.message || "");
       formDataToSubmit.append("ctaText", formData.ctaText || "");
       formDataToSubmit.append("ctaLink", formData.ctaLink || "");
       formDataToSubmit.append("backgroundColor", formData.backgroundColor);
@@ -727,14 +743,10 @@ export default function NewBarPage() {
       formDataToSubmit.append("targetUrlPattern", formData.targetUrlPattern || "");
       formDataToSubmit.append("displayFrequency", formData.displayFrequency || "always");
       // Multi-message fields
-      if (formData.messages) {
+      if (formData.useMultiMessage && formData.messages) {
         formDataToSubmit.append("messages", formData.messages);
-      }
-      if (formData.rotationSpeed) {
-        formDataToSubmit.append("rotationSpeed", formData.rotationSpeed.toString());
-      }
-      if (formData.transitionType) {
-        formDataToSubmit.append("transitionType", formData.transitionType);
+        formDataToSubmit.append("rotationSpeed", (formData.rotationSpeed || 5).toString());
+        formDataToSubmit.append("transitionType", formData.transitionType || "fade");
       }
       submit(formDataToSubmit, { method: "post" });
     },
