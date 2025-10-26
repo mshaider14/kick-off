@@ -175,6 +175,14 @@ export default function BarsPage() {
           navigate("/app/new");
         },
       }}
+      secondaryActions={[
+        {
+          content: "Browse Templates",
+          onAction: () => {
+            navigate("/app/templates");
+          },
+        },
+      ]}
     >
       <TitleBar title="Announcement Bars" />
       <Layout>

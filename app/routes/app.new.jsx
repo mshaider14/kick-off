@@ -14,6 +14,7 @@ import {
   useNavigation,
   useNavigate,
   useSubmit,
+  useLocation,
   Form,
 } from "react-router-dom";
 import { authenticate } from "../shopify.server";
@@ -348,6 +349,7 @@ export const action = async ({ request }) => {
 
 export default function NewBarPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const actionData = useActionData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
@@ -357,6 +359,9 @@ export default function NewBarPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastError, setToastError] = useState(false);
+
+  // Get template from navigation state if available
+  const templateFromState = location.state?.template;
 
   const [formData, setFormData] = useState({
     type: "announcement",
@@ -428,6 +433,16 @@ export default function NewBarPage() {
     { id: 3, title: "Design" },
     { id: 4, title: "Schedule" },
   ];
+
+  // Apply template from navigation state if available
+  useEffect(() => {
+    if (templateFromState) {
+      setFormData({ ...formData, ...templateFromState });
+      setToastMessage(`✨ Template "${templateFromState.name}" applied!`);
+      setToastError(false);
+      setShowToast(true);
+    }
+  }, [templateFromState]); // Only run when template changes
 
   useEffect(() => {
     if (actionData?.success) {
