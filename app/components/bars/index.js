@@ -8,3 +8,5 @@ export { DesignCustomization } from "./DesignCustomization";
 export { TargetingSchedule } from "./TargetingSchedule";
 export { TargetingRules } from "./TargetingRules";
 export { BarPreview } from "./BarPreview";
+export { TemplateLibrary } from "./TemplateLibrary";
+export { TemplatePreview } from "./TemplatePreview";

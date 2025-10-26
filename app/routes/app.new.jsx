@@ -29,6 +29,7 @@ import {
   TargetingSchedule,
   TargetingRules,
   BarPreview,
+  TemplateLibrary,
 } from "../components/bars";
 
 function json(data, init) {
@@ -225,146 +226,6 @@ function validateBarData(data, currentStep) {
   return errors;
 }
 
-// Pre-built templates for quick start
-const BAR_TEMPLATES = {
-  announcement: [
-    {
-      name: "Free Shipping Promo",
-      message: "🚚 Free Shipping on Orders Over $50!",
-      ctaText: "Shop Now",
-      ctaLink: "/collections/all",
-      backgroundColor: "#0066cc",
-      textColor: "#ffffff",
-    },
-    {
-      name: "Sale Announcement",
-      message: "🎉 Summer Sale - Up to 50% Off!",
-      ctaText: "View Sale",
-      ctaLink: "/collections/sale",
-      backgroundColor: "#d72c0d",
-      textColor: "#ffffff",
-    },
-    {
-      name: "New Arrival",
-      message: "✨ New Collection Just Dropped!",
-      ctaText: "Explore Now",
-      ctaLink: "/collections/new",
-      backgroundColor: "#6b46c1",
-      textColor: "#ffffff",
-    },
-  ],
-  countdown: [
-    {
-      name: "Flash Sale Timer",
-      message: "⚡ Flash Sale Ends Soon!",
-      ctaText: "Shop Flash Sale",
-      ctaLink: "/collections/flash-sale",
-      backgroundColor: "#ff8c00",
-      textColor: "#ffffff",
-      timerType: "fixed",
-      timerEndAction: "hide",
-    },
-    {
-      name: "Daily Deal",
-      message: "💎 Today's Deal Won't Last!",
-      ctaText: "Grab Deal",
-      ctaLink: "/collections/daily-deals",
-      backgroundColor: "#288d40",
-      textColor: "#ffffff",
-      timerType: "daily",
-      timerDailyTime: "23:59",
-      timerEndAction: "hide",
-    },
-    {
-      name: "Limited Offer",
-      message: "🔥 Exclusive Offer Just For You!",
-      ctaText: "Claim Offer",
-      ctaLink: "/collections/limited",
-      backgroundColor: "#1e3a8a",
-      textColor: "#ffffff",
-      timerType: "evergreen",
-      timerDuration: "60",
-      timerEndAction: "show_message",
-      timerEndMessage: "Offer expired - Check back soon!",
-    },
-  ],
-  shipping: [
-    {
-      name: "Standard Free Shipping",
-      shippingThreshold: 50,
-      shippingCurrency: "USD",
-      shippingGoalText: "Add {amount} more for free shipping!",
-      shippingReachedText: "You've unlocked free shipping! 🎉",
-      backgroundColor: "#0066cc",
-      textColor: "#ffffff",
-      shippingProgressColor: "#4ade80",
-      shippingShowIcon: true,
-    },
-    {
-      name: "Premium Threshold",
-      shippingThreshold: 75,
-      shippingCurrency: "USD",
-      shippingGoalText: "Spend {amount} more to unlock FREE shipping! 🚚",
-      shippingReachedText: "Congrats! You earned free shipping! 🎊",
-      backgroundColor: "#6b46c1",
-      textColor: "#ffffff",
-      shippingProgressColor: "#fbbf24",
-      shippingShowIcon: true,
-    },
-    {
-      name: "Minimal Theme",
-      shippingThreshold: 35,
-      shippingCurrency: "USD",
-      shippingGoalText: "{amount} away from free delivery",
-      shippingReachedText: "Free shipping unlocked ✓",
-      backgroundColor: "#1f2937",
-      textColor: "#ffffff",
-      shippingProgressColor: "#10b981",
-      shippingShowIcon: false,
-    },
-  ],
-  email: [
-    {
-      name: "Discount Code Offer",
-      message: "Get 10% Off Your First Order!",
-      emailPlaceholder: "Enter your email",
-      submitButtonText: "Get My Discount",
-      successMessage: "Thank you! Your discount code is below:",
-      discountCode: "WELCOME10",
-      backgroundColor: "#0066cc",
-      textColor: "#ffffff",
-      nameFieldEnabled: false,
-      privacyCheckboxEnabled: true,
-      privacyCheckboxText: "I agree to receive marketing emails",
-    },
-    {
-      name: "Newsletter Signup",
-      message: "Join our newsletter for exclusive deals! 📧",
-      emailPlaceholder: "Your email address",
-      namePlaceholder: "Your name",
-      nameFieldEnabled: true,
-      submitButtonText: "Subscribe Now",
-      successMessage: "Welcome! Check your inbox for a special surprise.",
-      discountCode: "NEWSLETTER15",
-      backgroundColor: "#288d40",
-      textColor: "#ffffff",
-      privacyCheckboxEnabled: true,
-      privacyCheckboxText: "I consent to receive promotional emails",
-    },
-    {
-      name: "Early Access",
-      message: "Be the first to know about new arrivals! ✨",
-      emailPlaceholder: "Enter email for early access",
-      submitButtonText: "Get Early Access",
-      successMessage: "You're in! We'll notify you of new releases first.",
-      backgroundColor: "#6b46c1",
-      textColor: "#ffffff",
-      nameFieldEnabled: false,
-      privacyCheckboxEnabled: false,
-    },
-  ],
-};
-
 // Helper function for contrast validation
 function getColorBrightness(hex) {
   const rgb = parseInt(hex.slice(1), 16);
@@ -372,17 +233,6 @@ function getColorBrightness(hex) {
   const g = (rgb >> 8) & 0xff;
   const b = (rgb >> 0) & 0xff;
   return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-// Helper function to get template description
-function getTemplateDescription(template) {
-  if (template.message) {
-    return template.message.substring(0, 30) + "...";
-  }
-  if (template.shippingGoalText) {
-    return template.shippingGoalText.substring(0, 30) + "...";
-  }
-  return "Free shipping progress bar";
 }
 
 export const action = async ({ request }) => {
@@ -800,68 +650,19 @@ export default function NewBarPage() {
               onChange={(value) => setFormData({ ...formData, type: value })}
             />
             
-            {/* Template Selector */}
+            {/* Template Library */}
             {formData.type && (
-              <Card sectioned>
-                <LegacyStack vertical spacing="loose">
-                  <Text variant="headingMd" as="h3">
-                    Quick Start Templates
-                  </Text>
-                  <Text variant="bodyMd" as="p" color="subdued">
-                    Choose a template to get started faster, or start from scratch
-                  </Text>
-                  
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
-                    {BAR_TEMPLATES[formData.type]?.map((template) => (
-                      <button
-                        key={template.name}
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, ...template });
-                          setToastMessage(`✨ Template "${template.name}" applied!`);
-                          setToastError(false);
-                          setShowToast(true);
-                        }}
-                        style={{
-                          padding: "16px",
-                          borderRadius: "8px",
-                          border: "2px solid #e5e7eb",
-                          backgroundColor: "#ffffff",
-                          cursor: "pointer",
-                          textAlign: "left",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = "#008060";
-                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 128, 96, 0.1)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = "#e5e7eb";
-                          e.currentTarget.style.boxShadow = "none";
-                        }}
-                      >
-                        <div style={{
-                          width: "100%",
-                          height: "40px",
-                          backgroundColor: template.backgroundColor,
-                          borderRadius: "4px",
-                          marginBottom: "8px",
-                        }} />
-                        <Text variant="bodyMd" as="p" fontWeight="semibold">
-                          {template.name}
-                        </Text>
-                        <Text variant="bodySm" as="p" color="subdued">
-                          {getTemplateDescription(template)}
-                        </Text>
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <Text variant="bodySm" as="p" color="subdued">
-                    💡 You can customize any template in the next steps
-                  </Text>
-                </LegacyStack>
-              </Card>
+              <div style={{ marginTop: "16px" }}>
+                <TemplateLibrary
+                  currentBarType={formData.type}
+                  onSelectTemplate={(template) => {
+                    setFormData({ ...formData, ...template });
+                    setToastMessage(`✨ Template "${template.name}" applied!`);
+                    setToastError(false);
+                    setShowToast(true);
+                  }}
+                />
+              </div>
             )}
           </>
         );
