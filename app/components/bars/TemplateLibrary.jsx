@@ -6,9 +6,7 @@ import {
   ButtonGroup,
   Button,
   Badge,
-  Icon,
 } from "@shopify/polaris";
-import { SearchMinor } from "@shopify/polaris-icons";
 import { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import {
@@ -16,7 +14,7 @@ import {
   CATEGORY_LABELS,
   searchTemplates,
   filterTemplatesByCategory,
-} from "../data/barTemplates";
+} from "../../data/barTemplates";
 
 export function TemplateLibrary({ onSelectTemplate, currentBarType }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,7 +107,6 @@ export function TemplateLibrary({ onSelectTemplate, currentBarType }) {
             value={searchQuery}
             onChange={setSearchQuery}
             autoComplete="off"
-            prefix={<Icon source={SearchMinor} />}
             clearButton
             onClearButtonClick={() => setSearchQuery("")}
           />
