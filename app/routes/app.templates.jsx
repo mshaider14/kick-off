@@ -1,17 +1,13 @@
-import { Page, Layout, Card } from "@shopify/polaris";
+import { Page, Layout, Card, Button } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authenticate } from "../shopify.server";
 import { TemplateLibrary, TemplatePreview } from "../components/bars";
 
-function json(data, init) {
-  return Response.json(data, init);
-}
-
 export const loader = async ({ request }) => {
   await authenticate.admin(request);
-  return json({}); // We don't need to load data, just authenticate
+  return Response.json({});
 };
 
 export default function TemplatesPage() {
@@ -49,29 +45,14 @@ export default function TemplatesPage() {
               <div style={{ marginTop: "16px" }}>
                 <Card>
                   <div style={{ padding: "16px" }}>
-                    <button
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      size="large"
                       onClick={() => handleUseTemplate(selectedTemplate)}
-                      style={{
-                        width: "100%",
-                        padding: "12px 24px",
-                        backgroundColor: "#008060",
-                        color: "#ffffff",
-                        border: "none",
-                        borderRadius: "8px",
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        cursor: "pointer",
-                        transition: "background-color 0.2s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#006e52";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#008060";
-                      }}
                     >
                       Use This Template →
-                    </button>
+                    </Button>
                   </div>
                 </Card>
               </div>

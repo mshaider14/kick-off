@@ -437,7 +437,7 @@ export default function NewBarPage() {
   // Apply template from navigation state if available
   useEffect(() => {
     if (templateFromState) {
-      setFormData({ ...formData, ...templateFromState });
+      setFormData(prevData => ({ ...prevData, ...templateFromState }));
       setToastMessage(`✨ Template "${templateFromState.name}" applied!`);
       setToastError(false);
       setShowToast(true);
