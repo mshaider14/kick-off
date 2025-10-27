@@ -29,6 +29,7 @@ import {
   DesignCustomization,
   TargetingSchedule,
   TargetingRules,
+  GeoTargeting,
   BarPreview,
   TemplateLibrary,
 } from "../components/bars";
@@ -737,6 +738,12 @@ export default function NewBarPage() {
               formData={formData}
               onChange={setFormData}
             />
+            <div style={{ marginTop: "16px" }}>
+              <GeoTargeting
+                formData={formData}
+                onChange={setFormData}
+              />
+            </div>
             <div style={{ marginTop: "16px" }}>
               <TargetingSchedule
                 formData={formData}

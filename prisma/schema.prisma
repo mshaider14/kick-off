@@ -102,6 +102,11 @@ model Bar {
   targetUrlPattern   String?  // JSON: {"type": "contains|starts_with|ends_with", "value": "..."} (when targetPages is "pattern")
   displayFrequency   String?  @default("always") // "always", "once_per_session", "once_per_visitor"
   
+  // Geo-targeting fields
+  geoTargetingEnabled Boolean  @default(false) // Enable/disable geo-targeting
+  geoTargetingMode    String?  @default("all") // "all", "include", "exclude"
+  geoTargetedCountries String? // JSON array of ISO country codes (e.g., ["US", "CA", "GB"])
+  
   // Multi-message rotation fields
   messages           String?  // JSON array of message objects: [{"message": "...", "ctaText": "...", "ctaLink": "..."}]
   rotationSpeed      Int?     @default(5) // Rotation speed in seconds (3-30)

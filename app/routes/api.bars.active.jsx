@@ -134,14 +134,13 @@ export const loader = async ({ request }) => {
       ctaLink: bar.ctaLink,
       backgroundColor: bar.backgroundColor,
       textColor: bar.textColor,
+      fontSize: bar.fontSize,
+      position: bar.position,
+      
       // Multi-message rotation fields
       messages: bar.messages,
       rotationSpeed: bar.rotationSpeed,
       transitionType: bar.transitionType,
-      backgroundColor: bar.backgroundColor,
-      textColor: bar.textColor,
-      fontSize: bar.fontSize,
-      position: bar.position,
       
       // Advanced design settings
       fontFamily: bar.fontFamily,
@@ -165,6 +164,11 @@ export const loader = async ({ request }) => {
       targetSpecificUrls: bar.targetSpecificUrls,
       targetUrlPattern: bar.targetUrlPattern,
       displayFrequency: bar.displayFrequency || "always",
+      
+      // Geo-targeting rules
+      geoTargetingEnabled: bar.geoTargetingEnabled || false,
+      geoTargetingMode: bar.geoTargetingMode || "all",
+      geoTargetedCountries: bar.geoTargetedCountries,
       
       // Schedule information
       timezone: bar.timezone || "UTC",

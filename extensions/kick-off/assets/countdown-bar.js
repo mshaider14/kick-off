@@ -849,8 +849,62 @@
     return true;
   }
   
+  // Check if current visitor's country matches geo-targeting rules
+  async function matchesGeoTarget(settings) {
+    // If geo-targeting is not enabled, always show
+    if (!settings.geoTargetingEnabled) {
+      return true;
+    }
+    
+    const mode = settings.geoTargetingMode || 'all';
+    
+    // If mode is 'all', show to everyone
+    if (mode === 'all') {
+      return true;
+    }
+    
+    try {
+      // Fetch visitor's country from geo detection API
+      const response = await fetch('/api/geo/detect');
+      const data = await response.json();
+      
+      if (!data.success || !data.country) {
+        // If detection fails, apply fallback behavior
+        // For 'include' mode: don't show (safer default)
+        // For 'exclude' mode: show (safer default)
+        console.log('Geo-targeting: Country detection failed, applying fallback');
+        return mode === 'exclude';
+      }
+      
+      const visitorCountry = data.country;
+      console.log('Geo-targeting: Detected country:', visitorCountry);
+      
+      // Parse targeted countries
+      let targetedCountries = [];
+      try {
+        targetedCountries = settings.geoTargetedCountries 
+          ? JSON.parse(settings.geoTargetedCountries) 
+          : [];
+      } catch (e) {
+        console.error('Geo-targeting: Invalid country list', e);
+        return mode === 'exclude'; // Fallback: show for exclude, hide for include
+      }
+      
+      const isInList = targetedCountries.includes(visitorCountry);
+      
+      // For 'include' mode: show only if in list
+      // For 'exclude' mode: show only if NOT in list
+      return mode === 'include' ? isInList : !isInList;
+      
+    } catch (error) {
+      console.error('Geo-targeting error:', error);
+      // Fallback: for 'exclude' mode show, for 'include' mode hide
+      return mode === 'exclude';
+    }
+  }
+  
   // Validate all targeting rules
-  function passesTargetingRules(settings) {
+  async function passesTargetingRules(settings) {
     // Check device targeting
     if (!matchesDeviceTarget(settings.targetDevices)) {
       console.log('Bar hidden: device targeting mismatch');
@@ -860,6 +914,13 @@
     // Check page targeting
     if (!matchesPageTarget(settings)) {
       console.log('Bar hidden: page targeting mismatch');
+      return false;
+    }
+    
+    // Check geo-targeting (async)
+    const passesGeo = await matchesGeoTarget(settings);
+    if (!passesGeo) {
+      console.log('Bar hidden: geo-targeting mismatch');
       return false;
     }
     
@@ -908,7 +969,7 @@
   };
   
   fetchBars()
-    .then(({ bars }) => {
+    .then(async ({ bars }) => {
       console.log("BAR DATA RECEIVED:", bars);
       
       if (!bars || bars.length === 0) {
@@ -928,8 +989,9 @@
           continue;
         }
 
-        // Validate targeting rules
-        if (!passesTargetingRules(settings)) {
+        // Validate targeting rules (now async)
+        const passes = await passesTargetingRules(settings);
+        if (!passes) {
           console.log(`Bar with ID ${settings.id} doesn't pass targeting rules. Skipping.`);
           continue;
         }

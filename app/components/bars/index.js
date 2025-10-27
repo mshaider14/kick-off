@@ -7,6 +7,7 @@ export { EmailCaptureConfiguration } from "./EmailCaptureConfiguration";
 export { DesignCustomization } from "./DesignCustomization";
 export { TargetingSchedule } from "./TargetingSchedule";
 export { TargetingRules } from "./TargetingRules";
+export { GeoTargeting } from "./GeoTargeting";
 export { BarPreview } from "./BarPreview";
 export { TemplateLibrary } from "./TemplateLibrary";
 export { TemplatePreview } from "./TemplatePreview";

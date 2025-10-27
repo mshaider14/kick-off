@@ -29,6 +29,7 @@ import {
   DesignCustomization,
   TargetingSchedule,
   TargetingRules,
+  GeoTargeting,
   BarPreview,
 } from "../components/bars";
 
@@ -494,6 +495,12 @@ export default function EditBarPage() {
               formData={formData}
               onChange={setFormData}
             />
+            <div style={{ marginTop: "16px" }}>
+              <GeoTargeting
+                formData={formData}
+                onChange={setFormData}
+              />
+            </div>
             <div style={{ marginTop: "16px" }}>
               <TargetingSchedule
                 formData={formData}
