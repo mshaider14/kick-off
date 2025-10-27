@@ -8,6 +8,18 @@ Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app
 
 ## Features
 
+### Geo-Targeting
+Target announcement bars to specific countries or regions:
+
+- **Country Detection:** Automatic IP-based country detection
+- **Include/Exclude Modes:** Show bars only in selected countries or hide in selected countries
+- **Multi-Country Selection:** Target multiple countries at once
+- **Popular Countries Quick-Select:** One-click selection of common markets
+- **Graceful Fallback:** Smart defaults when country detection is unavailable
+- **Zero Configuration:** Works automatically with CloudFlare, Vercel, and other hosting providers
+
+See [GEO_TARGETING.md](docs/GEO_TARGETING.md) for detailed documentation on the geo-targeting system.
+
 ### Bar Scheduling System
 The app includes a comprehensive scheduling system that allows automatic activation and deactivation of announcement bars:
 
