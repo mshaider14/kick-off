@@ -195,7 +195,7 @@ export const action = async ({ request, params }) => {
       textColor: formData.get("textColor") || "#ffffff",
       fontSize: parseInt(formData.get("fontSize") || "14", 10),
       position: formData.get("position") || "top",
-      priority: formData.get("priority") ? parseInt(formData.get("priority"), 10) : 5,
+      priority: Math.max(1, Math.min(10, parseInt(formData.get("priority"), 10) || 5)),
       isActive: actionType === "publish",
       startDate: scheduleStartImmediate ? null : (formData.get("startDate") ? new Date(formData.get("startDate")) : null),
       endDate: scheduleEndNever ? null : (formData.get("endDate") ? new Date(formData.get("endDate")) : null),
