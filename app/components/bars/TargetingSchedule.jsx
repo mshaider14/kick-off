@@ -90,6 +90,37 @@ export function TargetingSchedule({ formData, onChange }) {
         </Text>
 
         <FormLayout>
+          {/* Priority Selection */}
+          <Select
+            label="Priority Level"
+            options={[
+              { label: "1 - Highest Priority", value: "1" },
+              { label: "2 - Very High", value: "2" },
+              { label: "3 - High", value: "3" },
+              { label: "4 - Above Normal", value: "4" },
+              { label: "5 - Normal (Default)", value: "5" },
+              { label: "6 - Below Normal", value: "6" },
+              { label: "7 - Low", value: "7" },
+              { label: "8 - Very Low", value: "8" },
+              { label: "9 - Minimal", value: "9" },
+              { label: "10 - Lowest Priority", value: "10" },
+            ]}
+            value={String(formData.priority || 5)}
+            onChange={(value) => handleFieldChange("priority")(parseInt(value, 10))}
+            helpText="When multiple bars are active, higher priority bars (lower numbers) display first. Bars with equal priority display in creation order."
+          />
+          
+          {formData.priority !== 5 && (
+            <div style={{ marginTop: "-12px", padding: "12px", backgroundColor: "#fef3c7", borderRadius: "6px", border: "1px solid #fbbf24" }}>
+              <Text variant="bodySm" as="p">
+                <strong>ℹ️ Priority Behavior:</strong> This bar has {formData.priority < 5 ? "higher" : "lower"} than normal priority.
+                {formData.priority < 5 
+                  ? " It will display before bars with normal or lower priority."
+                  : " It will only display if no higher priority bars are active."}
+              </Text>
+            </div>
+          )}
+
           {/* Timezone Selection */}
           <Select
             label="Timezone"
@@ -202,6 +233,7 @@ export function TargetingSchedule({ formData, onChange }) {
 
 TargetingSchedule.propTypes = {
   formData: PropTypes.shape({
+    priority: PropTypes.number,
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     timezone: PropTypes.string,

@@ -34,13 +34,16 @@ export const loader = async ({ request }) => {
       return json({ success: false, error: "Shop parameter required" }, { status: 400 });
     }
 
-    // Find active bars, ordered by updatedAt (most recent first) for priority
+    // Find active bars, ordered by priority (1=highest), then createdAt (oldest first for equal priority)
     const bars = await db.bar.findMany({
       where: { 
         shop, 
         isActive: true 
       },
-      orderBy: { updatedAt: "desc" },
+      orderBy: [
+        { priority: "asc" },  // Lower number = higher priority
+        { createdAt: "asc" }  // Equal priority: show oldest first (creation order)
+      ],
       take: limit,
     });
 
@@ -136,6 +139,7 @@ export const loader = async ({ request }) => {
       textColor: bar.textColor,
       fontSize: bar.fontSize,
       position: bar.position,
+      priority: bar.priority || 5, // Include priority for reference
       
       // Multi-message rotation fields
       messages: bar.messages,

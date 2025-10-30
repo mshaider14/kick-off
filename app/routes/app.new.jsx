@@ -257,6 +257,7 @@ export const action = async ({ request }) => {
       textColor: formData.get("textColor") || "#ffffff",
       fontSize: parseInt(formData.get("fontSize") || "14", 10),
       position: formData.get("position") || "top",
+      priority: formData.get("priority") ? parseInt(formData.get("priority"), 10) : 5,
       isActive: actionType === "publish",
       startDate: scheduleStartImmediate ? null : (formData.get("startDate") ? new Date(formData.get("startDate")) : null),
       endDate: scheduleEndNever ? null : (formData.get("endDate") ? new Date(formData.get("endDate")) : null),
@@ -373,6 +374,7 @@ export default function NewBarPage() {
     textColor: "#ffffff",
     fontSize: 14,
     position: "top",
+    priority: 5, // Priority level: 1-10 (1=highest, 10=lowest)
     startDate: "",
     endDate: "",
     timezone: "UTC",
@@ -539,6 +541,7 @@ export default function NewBarPage() {
       formDataToSubmit.append("textColor", formData.textColor);
       formDataToSubmit.append("fontSize", formData.fontSize.toString());
       formDataToSubmit.append("position", formData.position);
+      formDataToSubmit.append("priority", (formData.priority || 5).toString());
       formDataToSubmit.append("actionType", actionType);
       formDataToSubmit.append("timezone", formData.timezone || "UTC");
       formDataToSubmit.append("scheduleStartImmediate", formData.scheduleStartImmediate ? "true" : "false");
