@@ -977,7 +977,8 @@
         return bar.style.display = 'none';
       }
 
-      // Process bars with priority (first valid bar wins)
+      // Process bars with priority (API returns bars sorted by priority: 1=highest)
+      // First valid bar that passes targeting rules wins
       let displayedBar = false;
       
       for (const settings of bars) {

@@ -10,8 +10,8 @@ function json(data, init) {
 /**
  * GET /api/bars/active
  * 
- * Fetch active bars for a given shop. Supports optional priority-based ordering
- * to return multiple bars if needed.
+ * Fetch active bars for a given shop, sorted by priority (1=highest).
+ * Supports multiple bars for priority-based display on the storefront.
  * 
  * Query Parameters:
  * - shop (required): The shop domain (e.g., "mystore.myshopify.com")
@@ -20,7 +20,7 @@ function json(data, init) {
  * Returns:
  * {
  *   success: boolean,
- *   bars: Array<Bar> | null,
+ *   bars: Array<Bar> | null,  // Sorted by priority ASC, then createdAt ASC
  *   message?: string
  * }
  */
