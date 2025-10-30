@@ -10,7 +10,8 @@ import {
   Popover,
   ActionList,
 } from "@shopify/polaris";
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import {
@@ -31,10 +32,14 @@ export const loader = async ({ request }) => {
     const { session } = await authenticate.admin(request);
     const shop = session.shop;
 
-    // Fetch all bars for this shop
+    // Fetch all bars for this shop, with priority-based ordering
     const bars = await db.bar.findMany({
       where: { shop },
-      orderBy: { createdAt: "desc" },
+      orderBy: [
+        { isActive: "desc" }, // Active bars first
+        { priority: "asc" },  // Then by priority (1=highest)
+        { createdAt: "desc" } // Finally by creation date
+      ],
     });
 
     return json({ bars });
@@ -56,7 +61,7 @@ export const action = async ({ request }) => {
       await db.bar.delete({ where: { id: barId, shop } });
       return json({ success: true, message: "Bar deleted." });
 
-    case "setStatus":
+    case "setStatus": {
       const newStatus = formData.get("status") === "true";
 
       if (newStatus) {
@@ -80,6 +85,7 @@ export const action = async ({ request }) => {
         });
         return json({ success: true, message: "Bar deactivated." });
       }
+    }
 
     default:
       return json({ success: false, error: "Unknown action" }, { status: 400 });
@@ -150,6 +156,15 @@ export default function BarsPage() {
         {bar.isActive ? "● Active" : "○ Draft"}
       </Badge>
     </div>,
+    <div key={`priority-${bar.id}`} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+      {bar.priority <= 3 && <span style={{ fontSize: "14px" }}>⭐</span>}
+      <Text variant="bodyMd" as="span" fontWeight={bar.priority <= 5 ? "semibold" : "regular"}>
+        {bar.priority || 5}
+      </Text>
+      <Text variant="bodySm" as="span" color="subdued">
+        {bar.priority === 1 ? "(Highest)" : bar.priority <= 3 ? "(High)" : bar.priority === 5 ? "(Normal)" : "(Low)"}
+      </Text>
+    </div>,
     <div key={`position-${bar.id}`}>
       <Text variant="bodyMd" as="span">
         {bar.position === "top" ? "⬆️ Top" : "⬇️ Bottom"}
@@ -211,8 +226,8 @@ export default function BarsPage() {
                   </LegacyStack>
 
                   <DataTable
-                    columnContentTypes={["text", "text", "text", "text", "text", "text"]}
-                    headings={["Name / Message", "Type", "Status", "Position", "Created", "Actions"]}
+                    columnContentTypes={["text", "text", "text", "text", "text", "text", "text"]}
+                    headings={["Name / Message", "Type", "Status", "Priority", "Position", "Created", "Actions"]}
                     rows={rows}
                   />
                 </LegacyStack>
@@ -285,3 +300,11 @@ function BarActions({ bar, onDelete, isProcessing }) {
     </Popover>
   );
 }
+BarActions.propTypes = {
+  bar: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    isActive: PropTypes.bool.isRequired,
+  }).isRequired,
+  onDelete: PropTypes.func.isRequired,
+  isProcessing: PropTypes.bool.isRequired,
+};
