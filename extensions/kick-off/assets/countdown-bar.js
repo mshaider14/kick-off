@@ -129,22 +129,13 @@
       closeBtn.style.left = 'auto';
     }
 
-    // Apply icon style
-    const iconMap = {
-      'x': '×',
-      'times': '✕',
-      'cross': '✖',
-      'close': 'Close'
-    };
-
-    // Update the SVG or text based on icon style
+    // Apply icon style - currently using SVG which works for all styles
+    // For 'close' text style, replace with text
     if (closeIconStyle === 'close') {
       closeBtn.innerHTML = '<span style="font-size: 12px; font-weight: 600;">Close</span>';
-    } else {
-      // Keep the SVG for x, times, cross styles
-      // The SVG already renders an X shape which works for all non-text styles
-      // We could enhance this further if needed, but the SVG is universal enough
     }
+    // For other icon styles (x, times, cross), the SVG works universally
+    // Future enhancement: customize SVG path based on icon style if needed
   }
 
   // Applies styles and content common to ALL bar types.

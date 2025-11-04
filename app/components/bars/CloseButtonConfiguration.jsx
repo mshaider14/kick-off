@@ -5,12 +5,9 @@ import {
   Select,
   Text,
   BlockStack,
-  InlineStack,
-  Icon,
 } from "@shopify/polaris";
 import { useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { XIcon } from "@shopify/polaris-icons";
 
 /**
  * CloseButtonConfiguration Component
