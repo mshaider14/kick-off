@@ -59,6 +59,94 @@
     return `barClosed_${id}`;
   }
 
+  // Cookie management utilities
+  function setCookie(name, value, days) {
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + days);
+    document.cookie = `${name}=${value}; expires=${expiryDate.toUTCString()}; path=/`;
+  }
+
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+  }
+
+  // Check if bar should be hidden based on dismiss behavior
+  function isBarDismissed(settings) {
+    const barId = settings.id;
+    const dismissBehavior = settings.dismissBehavior || 'session';
+    
+    if (dismissBehavior === 'session') {
+      // Check sessionStorage
+      return sessionStorage.getItem(getSessionKey(barId)) === 'true';
+    } else if (dismissBehavior === '24hours') {
+      // Check cookie with 24-hour expiry
+      return getCookie(`barDismissed_24h_${barId}`) === 'true';
+    } else if (dismissBehavior === 'permanent') {
+      // Check cookie with permanent expiry (365 days)
+      return getCookie(`barDismissed_permanent_${barId}`) === 'true';
+    }
+    
+    return false;
+  }
+
+  // Store dismiss preference based on behavior
+  function storeDismiss(settings) {
+    const barId = settings.id;
+    const dismissBehavior = settings.dismissBehavior || 'session';
+    
+    if (dismissBehavior === 'session') {
+      sessionStorage.setItem(getSessionKey(barId), 'true');
+    } else if (dismissBehavior === '24hours') {
+      setCookie(`barDismissed_24h_${barId}`, 'true', 1); // 1 day
+    } else if (dismissBehavior === 'permanent') {
+      setCookie(`barDismissed_permanent_${barId}`, 'true', 365); // 1 year
+    }
+  }
+
+  // Configure close button appearance and behavior
+  function configureCloseButton(closeBtn, settings) {
+    if (!closeBtn) return;
+
+    const closeButtonEnabled = settings.closeButtonEnabled !== false; // Default to true
+    const closeButtonPosition = settings.closeButtonPosition || 'right';
+    const closeIconStyle = settings.closeIconStyle || 'x';
+
+    // Show/hide close button
+    if (!closeButtonEnabled) {
+      closeBtn.style.display = 'none';
+      return;
+    }
+
+    closeBtn.style.display = 'block';
+
+    // Position close button (left or right)
+    if (closeButtonPosition === 'left') {
+      closeBtn.style.left = '12px';
+      closeBtn.style.right = 'auto';
+    } else {
+      closeBtn.style.right = '12px';
+      closeBtn.style.left = 'auto';
+    }
+
+    // Apply icon style
+    const iconMap = {
+      'x': '×',
+      'times': '✕',
+      'cross': '✖',
+      'close': 'Close'
+    };
+
+    // Update the SVG or text based on icon style
+    if (closeIconStyle === 'close') {
+      closeBtn.innerHTML = '<span style="font-size: 12px; font-weight: 600;">Close</span>';
+    } else {
+      // Keep the SVG for x, times, cross styles
+      // The SVG already renders an X shape which works for all non-text styles
+      // We could enhance this further if needed, but the SVG is universal enough
+    }
+  }
+
   // Applies styles and content common to ALL bar types.
   function applyCommonSettings(settings) {
     // Safety check
@@ -516,13 +604,19 @@
 
     // Setup close button
     const closeBtn = document.getElementById('close-shipping-bar');
-    if (closeBtn) {
+    
+    // Configure close button appearance
+    configureCloseButton(closeBtn, settings);
+    
+    if (closeBtn && settings.closeButtonEnabled !== false) {
       closeBtn.addEventListener('click', () => {
         // Track bar close
         trackEvent('bar_closed', settings);
         
         shippingBar.style.display = 'none';
-        sessionStorage.setItem(getSessionKey(settings.id), 'true');
+        
+        // Store dismiss preference based on configured behavior
+        storeDismiss(settings);
       });
     }
   }
@@ -982,11 +1076,9 @@
       let displayedBar = false;
       
       for (const settings of bars) {
-        const sessionKey = getSessionKey(settings.id);
-        const isClosed = sessionStorage.getItem(sessionKey) === 'true';
-
-        if (isClosed) {
-          console.log(`Bar with ID ${settings.id} was previously closed in this session. Skipping.`);
+        // Check if bar was dismissed based on configured behavior
+        if (isBarDismissed(settings)) {
+          console.log(`Bar with ID ${settings.id} was previously dismissed. Skipping.`);
           continue;
         }
 
@@ -1023,7 +1115,11 @@
           : settings.type === 'email'
           ? document.getElementById('close-email-bar')
           : document.getElementById('close-bar');
-        if (closeBtn) {
+        
+        // Configure close button appearance
+        configureCloseButton(closeBtn, settings);
+        
+        if (closeBtn && settings.closeButtonEnabled !== false) {
           closeBtn.addEventListener('click', () => {
             // Track bar close
             trackEvent('bar_closed', settings);
@@ -1037,7 +1133,9 @@
               bar.style.display = 'none';
             }
             
-            sessionStorage.setItem(sessionKey, 'true');
+            // Store dismiss preference based on configured behavior
+            storeDismiss(settings);
+            
             if (countdownInterval) clearInterval(countdownInterval);
             stopMultiMessageRotation(); // Stop message rotation when bar is closed
           });

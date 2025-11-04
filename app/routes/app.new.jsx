@@ -32,6 +32,7 @@ import {
   GeoTargeting,
   BarPreview,
   TemplateLibrary,
+  CloseButtonConfiguration,
 } from "../components/bars";
 
 function json(data, init) {
@@ -311,6 +312,11 @@ export const action = async ({ request }) => {
       messages: formData.get("messages") || null,
       rotationSpeed: formData.get("rotationSpeed") ? parseInt(formData.get("rotationSpeed"), 10) : null,
       transitionType: formData.get("transitionType") || null,
+      // Close button configuration fields
+      closeButtonEnabled: formData.get("closeButtonEnabled") === "true",
+      closeButtonPosition: formData.get("closeButtonPosition") || "right",
+      dismissBehavior: formData.get("dismissBehavior") || "session",
+      closeIconStyle: formData.get("closeIconStyle") || "x",
     };
 
     // Validate
@@ -428,6 +434,11 @@ export default function NewBarPage() {
     messages: "",
     rotationSpeed: 5,
     transitionType: "fade",
+    // Close button configuration fields
+    closeButtonEnabled: true,
+    closeButtonPosition: "right",
+    dismissBehavior: "session",
+    closeIconStyle: "x",
   });
 
   const steps = [
@@ -729,10 +740,20 @@ export default function NewBarPage() {
         );
       case 3:
         return (
-          <DesignCustomization
-            formData={formData}
-            onChange={setFormData}
-          />
+          <>
+            <DesignCustomization
+              formData={formData}
+              onChange={setFormData}
+            />
+            <div style={{ marginTop: "16px" }}>
+              <CloseButtonConfiguration
+                formData={formData}
+                onChange={(field, value) => {
+                  setFormData((prev) => ({ ...prev, [field]: value }));
+                }}
+              />
+            </div>
+          </>
         );
       case 4:
         return (

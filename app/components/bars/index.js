@@ -11,3 +11,4 @@ export { GeoTargeting } from "./GeoTargeting";
 export { BarPreview } from "./BarPreview";
 export { TemplateLibrary } from "./TemplateLibrary";
 export { TemplatePreview } from "./TemplatePreview";
+export { CloseButtonConfiguration } from "./CloseButtonConfiguration";

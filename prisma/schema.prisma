@@ -113,6 +113,12 @@ model Bar {
   rotationSpeed      Int?     @default(5) // Rotation speed in seconds (3-30)
   transitionType     String?  @default("fade") // Transition animation: "fade", "slide"
   
+  // Close/Dismiss button configuration fields
+  closeButtonEnabled  Boolean  @default(true) // Enable/disable close button
+  closeButtonPosition String?  @default("right") // "left" or "right"
+  dismissBehavior     String?  @default("session") // "session", "24hours", "permanent"
+  closeIconStyle      String?  @default("x") // "x", "cross", "times", "close"
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   

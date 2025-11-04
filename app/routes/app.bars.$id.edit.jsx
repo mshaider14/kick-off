@@ -31,6 +31,7 @@ import {
   TargetingRules,
   GeoTargeting,
   BarPreview,
+  CloseButtonConfiguration,
 } from "../components/bars";
 
 function json(data, init) {
@@ -247,6 +248,11 @@ export const action = async ({ request, params }) => {
       messages: formData.get("messages") || null,
       rotationSpeed: formData.get("rotationSpeed") ? parseInt(formData.get("rotationSpeed"), 10) : null,
       transitionType: formData.get("transitionType") || null,
+      // Close button configuration fields
+      closeButtonEnabled: formData.get("closeButtonEnabled") === "true",
+      closeButtonPosition: formData.get("closeButtonPosition") || "right",
+      dismissBehavior: formData.get("dismissBehavior") || "session",
+      closeIconStyle: formData.get("closeIconStyle") || "x",
     };
 
     // Validate
@@ -358,6 +364,11 @@ export default function EditBarPage() {
     messages: loadedBar.messages || "",
     rotationSpeed: loadedBar.rotationSpeed || 5,
     transitionType: loadedBar.transitionType || "fade",
+    // Close button configuration fields
+    closeButtonEnabled: loadedBar.closeButtonEnabled !== false,
+    closeButtonPosition: loadedBar.closeButtonPosition || "right",
+    dismissBehavior: loadedBar.dismissBehavior || "session",
+    closeIconStyle: loadedBar.closeIconStyle || "x",
   });
 
   const steps = [
@@ -485,10 +496,20 @@ export default function EditBarPage() {
         );
       case 3:
         return (
-          <DesignCustomization
-            formData={formData}
-            onChange={setFormData}
-          />
+          <>
+            <DesignCustomization
+              formData={formData}
+              onChange={setFormData}
+            />
+            <div style={{ marginTop: "16px" }}>
+              <CloseButtonConfiguration
+                formData={formData}
+                onChange={(field, value) => {
+                  setFormData((prev) => ({ ...prev, [field]: value }));
+                }}
+              />
+            </div>
+          </>
         );
       case 4:
         return (

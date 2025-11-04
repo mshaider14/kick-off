@@ -211,6 +211,12 @@ export const loader = async ({ request }) => {
         privacyCheckboxEnabled: bar.privacyCheckboxEnabled || false,
         privacyCheckboxText: bar.privacyCheckboxText || "I agree to receive marketing emails",
       }),
+      
+      // Close button configuration
+      closeButtonEnabled: bar.closeButtonEnabled !== false, // Default to true
+      closeButtonPosition: bar.closeButtonPosition || "right",
+      dismissBehavior: bar.dismissBehavior || "session",
+      closeIconStyle: bar.closeIconStyle || "x",
     }));
 
     return json({ 
