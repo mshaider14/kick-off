@@ -162,13 +162,13 @@ type RouteFiles = {
     id: "routes/auth.login";
     page: "/auth/login";
   };
-  "routes/_index/route.jsx": {
-    id: "routes/_index";
-    page: "/";
-  };
   "routes/auth.$.jsx": {
     id: "routes/auth.$";
     page: "/auth/*";
+  };
+  "routes/_index/route.jsx": {
+    id: "routes/_index";
+    page: "/";
   };
   "routes/app.jsx": {
     id: "routes/app";
