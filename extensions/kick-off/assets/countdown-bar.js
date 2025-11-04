@@ -108,7 +108,7 @@
   function configureCloseButton(closeBtn, settings) {
     if (!closeBtn) return;
 
-    const closeButtonEnabled = settings.closeButtonEnabled !== false; // Default to true
+    const closeButtonEnabled = settings.closeButtonEnabled ?? true; // Default to true
     const closeButtonPosition = settings.closeButtonPosition || 'right';
     const closeIconStyle = settings.closeIconStyle || 'x';
 
@@ -130,9 +130,14 @@
     }
 
     // Apply icon style - currently using SVG which works for all styles
-    // For 'close' text style, replace with text
+    // For 'close' text style, replace with text using textContent for safety
     if (closeIconStyle === 'close') {
-      closeBtn.innerHTML = '<span style="font-size: 12px; font-weight: 600;">Close</span>';
+      const span = document.createElement('span');
+      span.style.fontSize = '12px';
+      span.style.fontWeight = '600';
+      span.textContent = 'Close';
+      closeBtn.innerHTML = ''; // Clear existing content
+      closeBtn.appendChild(span);
     }
     // For other icon styles (x, times, cross), the SVG works universally
     // Future enhancement: customize SVG path based on icon style if needed
@@ -599,7 +604,7 @@
     // Configure close button appearance
     configureCloseButton(closeBtn, settings);
     
-    if (closeBtn && settings.closeButtonEnabled !== false) {
+    if (closeBtn && (settings.closeButtonEnabled ?? true)) {
       closeBtn.addEventListener('click', () => {
         // Track bar close
         trackEvent('bar_closed', settings);
@@ -1110,7 +1115,7 @@
         // Configure close button appearance
         configureCloseButton(closeBtn, settings);
         
-        if (closeBtn && settings.closeButtonEnabled !== false) {
+        if (closeBtn && (settings.closeButtonEnabled ?? true)) {
           closeBtn.addEventListener('click', () => {
             // Track bar close
             trackEvent('bar_closed', settings);

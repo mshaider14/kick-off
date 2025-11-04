@@ -213,7 +213,7 @@ export const loader = async ({ request }) => {
       }),
       
       // Close button configuration
-      closeButtonEnabled: bar.closeButtonEnabled !== false, // Default to true
+      closeButtonEnabled: bar.closeButtonEnabled ?? true, // Default to true
       closeButtonPosition: bar.closeButtonPosition || "right",
       dismissBehavior: bar.dismissBehavior || "session",
       closeIconStyle: bar.closeIconStyle || "x",

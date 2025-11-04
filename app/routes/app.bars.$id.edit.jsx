@@ -365,7 +365,7 @@ export default function EditBarPage() {
     rotationSpeed: loadedBar.rotationSpeed || 5,
     transitionType: loadedBar.transitionType || "fade",
     // Close button configuration fields
-    closeButtonEnabled: loadedBar.closeButtonEnabled !== false,
+    closeButtonEnabled: loadedBar.closeButtonEnabled ?? true,
     closeButtonPosition: loadedBar.closeButtonPosition || "right",
     dismissBehavior: loadedBar.dismissBehavior || "session",
     closeIconStyle: loadedBar.closeIconStyle || "x",
