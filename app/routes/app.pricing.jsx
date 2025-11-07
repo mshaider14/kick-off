@@ -8,7 +8,7 @@ import {
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState, useEffect, useCallback } from "react";
-import { useLoaderData, useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { authenticate } from "../shopify.server";
 import { 
   UsageMeter, 
@@ -29,7 +29,6 @@ export const loader = async ({ request }) => {
 };
 
 export default function PricingPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -184,7 +183,7 @@ export default function PricingPage() {
               }}
             />
             
-            <UsageMeter usage={usage} plan={plan} />
+            <UsageMeter usage={usage} />
           </LegacyStack>
         </Layout.Section>
 
@@ -201,7 +200,7 @@ export default function PricingPage() {
               </div>
 
               <Grid>
-                {Object.entries(PLANS).map(([key, planInfo], index) => (
+                {Object.entries(PLANS).map(([key, planInfo]) => (
                   <Grid.Cell key={key} columnSpan={{ xs: 6, sm: 6, md: 3, lg: 3, xl: 3 }}>
                     <PricingCard
                       planKey={key}

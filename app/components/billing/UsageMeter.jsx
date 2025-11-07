@@ -1,7 +1,7 @@
 import { Card, ProgressBar, Text, LegacyStack, Badge } from "@shopify/polaris";
 import PropTypes from "prop-types";
 
-export default function UsageMeter({ usage, plan }) {
+export default function UsageMeter({ usage }) {
   const { viewCount, viewLimit, percentage } = usage;
   
   const isUnlimited = viewLimit === 'unlimited';
@@ -74,5 +74,4 @@ UsageMeter.propTypes = {
     viewLimit: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     percentage: PropTypes.number.isRequired,
   }).isRequired,
-  plan: PropTypes.object.isRequired,
 };
