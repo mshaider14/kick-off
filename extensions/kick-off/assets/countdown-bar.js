@@ -106,41 +106,74 @@
 
   // Configure close button appearance and behavior
   function configureCloseButton(closeBtn, settings) {
-    if (!closeBtn) return;
+    if (!closeBtn) return; // Element not found in HTML
 
     const closeButtonEnabled = settings.closeButtonEnabled ?? true; // Default to true
     const closeButtonPosition = settings.closeButtonPosition || 'right';
     const closeIconStyle = settings.closeIconStyle || 'x';
 
-    // Show/hide close button
+    // 1. Show/hide close button
     if (!closeButtonEnabled) {
       closeBtn.style.display = 'none';
       return;
     }
 
-    closeBtn.style.display = 'block';
+    // Use a high-quality, centered SVG for the 'x' icon
+    const closeIconSvg = `
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style="stroke: currentColor; stroke-width: 2; stroke-linecap: round;"
+      >
+        <path d="M1 1L13 13M1 13L13 1" />
+      </svg>
+    `;
 
-    // Position close button (left or right)
-    if (closeButtonPosition === 'left') {
-      closeBtn.style.left = '12px';
-      closeBtn.style.right = 'auto';
-    } else {
-      closeBtn.style.right = '12px';
-      closeBtn.style.left = 'auto';
-    }
+    closeBtn.style.display = 'flex'; // Use flex for perfect centering
+    closeBtn.style.alignItems = 'center';
+    closeBtn.style.justifyContent = 'center';
 
-    // Apply icon style - currently using SVG which works for all styles
-    // For 'close' text style, replace with text using textContent for safety
+    // 2. Apply icon style
     if (closeIconStyle === 'close') {
+      closeBtn.innerHTML = ''; // Clear existing icon
       const span = document.createElement('span');
       span.style.fontSize = '12px';
       span.style.fontWeight = '600';
       span.textContent = 'Close';
-      closeBtn.innerHTML = ''; // Clear existing content
       closeBtn.appendChild(span);
+    } else {
+      // Use SVG for 'x', 'times', and 'cross'
+      closeBtn.innerHTML = closeIconSvg;
     }
-    // For other icon styles (x, times, cross), the SVG works universally
-    // Future enhancement: customize SVG path based on icon style if needed
+
+    // 3. Find parent bar and content elements
+    const barElement = closeBtn.closest('.countdown-bar, .free-shipping-bar, .email-capture-bar');
+    if (!barElement) return;
+
+    const contentElement = barElement.querySelector('.countdown-bar__content, .free-shipping-bar__content, .email-capture-bar__content');
+    if (!contentElement) return;
+
+    // 4. Position button AND adjust content padding
+    const buttonPadding = '48px'; // Space for 32px button + 16px gap
+    const defaultPadding = barElement.style.paddingLeft || '20px'; // Use bar's original padding
+
+    if (closeButtonPosition === 'left') {
+      closeBtn.style.left = '12px';
+      closeBtn.style.right = 'auto';
+      // Adjust content padding to prevent overlap
+      contentElement.style.paddingLeft = buttonPadding;
+      contentElement.style.paddingRight = defaultPadding;
+    } else {
+      // Default to right
+      closeBtn.style.right = '12px';
+      closeBtn.style.left = 'auto';
+      // Adjust content padding to prevent overlap
+      contentElement.style.paddingRight = buttonPadding;
+      contentElement.style.paddingLeft = defaultPadding;
+    }
   }
 
   // Applies styles and content common to ALL bar types.

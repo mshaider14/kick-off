@@ -56,30 +56,55 @@
   position: relative;
 }
 
-/* Support for close button positioning */
-.countdown-bar__close {
+/* ============================================
+   SHARED BAR CLOSE BUTTON
+   ============================================ */
+
+.countdown-bar__close,
+.free-shipping-bar__close,
+.email-capture-bar__close {
   position: absolute;
-  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: #ffffff;
+  
+  /* Use 'display: none' by default. JS will change to 'flex' if enabled. */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  border: none;
+  color: currentColor; /* Inherit text color from bar */
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
   flex-shrink: 0;
-  z-index: 1;
+  z-index: 10; /* Ensure it's above content */
+  transition: all 0.2s ease;
+  padding: 0; /* Remove default padding */
 }
 
-.countdown-bar__close:hover {
+/* Specific background colors */
+.countdown-bar__close,
+.free-shipping-bar__close {
+  background: rgba(255, 255, 255, 0.2);
+}
+.email-capture-bar__close {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Shared Hover/Active */
+.countdown-bar__close:hover,
+.free-shipping-bar__close:hover,
+.email-capture-bar__close:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-50%) rotate(90deg);
+  transform: translateY(-50%) scale(1.1); /* Use scale instead of rotate for a cleaner effect */
+}
+
+.countdown-bar__close:active,
+.free-shipping-bar__close:active,
+.email-capture-bar__close:active {
+  transform: translateY(-50%) scale(0.95);
 }
 
 .countdown-bar__content {
@@ -88,7 +113,7 @@
   gap: 24px;
   flex-wrap: wrap;
   flex: 1;
-  padding-right: 48px; /* Space for close button on right */
+  /* padding-right is now set by countdown-bar.js */
 }
 
 .countdown-bar__message {
@@ -333,7 +358,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  padding-right: 48px; /* Space for close button on right */
+  /* padding-right is now set by countdown-bar.js */
 }
 
 .free-shipping-bar__wrapper {
@@ -405,35 +430,6 @@
   opacity: 0.9;
   text-align: center;
   font-weight: 500;
-}
-
-.free-shipping-bar__close {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: #ffffff;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  z-index: 1;
-}
-
-.free-shipping-bar__close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-50%) rotate(90deg);
-}
-
-.free-shipping-bar__close:active {
-  transform: translateY(-50%) rotate(90deg) scale(0.95);
 }
 
 /* Hidden state */
@@ -568,7 +564,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  padding-right: 48px; /* Space for close button on right */
+  /* padding-right is now set by countdown-bar.js */
 }
 
 .email-capture-bar__form-wrapper {
@@ -781,32 +777,6 @@
   font-weight: 700;
   letter-spacing: 1px;
   font-family: 'Courier New', monospace;
-}
-
-.email-capture-bar__close {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  flex-shrink: 0;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  border-radius: 50%;
-  color: currentColor;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  z-index: 1;
-}
-
-.email-capture-bar__close:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-50%) rotate(90deg);
 }
 
 .email-capture-bar__close svg {
