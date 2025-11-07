@@ -15,8 +15,12 @@ api_version = "2026-01"
 topics = ["app/uninstalled"]
 uri = "/webhooks"
 
+[[webhooks.subscriptions]]
+topics = ["app_subscriptions/update"]
+uri = "/webhooks"
+
 [access_scopes]
-scopes = "write_products,write_themes"
+scopes = "write_products,write_themes,read_own_subscription_contracts,write_own_subscription_contracts"
 
 [app_proxy]
 url = "https://kick-off-three.vercel.app/apps/countdown"

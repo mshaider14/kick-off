@@ -19,6 +19,9 @@ type Pages = {
   "/apps/countdown/analytics/track-view": {
     params: {};
   };
+  "/webhooks/app/subscriptions_update": {
+    params: {};
+  };
   "/api/bars/:barId/schedule-status": {
     params: {
       "barId": string;
@@ -45,7 +48,19 @@ type Pages = {
   "/apps/countdown/settings": {
     params: {};
   };
+  "/api/cron/reset-views": {
+    params: {};
+  };
+  "/api/billing/history": {
+    params: {};
+  };
   "/api/analytics/data": {
+    params: {};
+  };
+  "/api/billing/create": {
+    params: {};
+  };
+  "/api/billing/status": {
     params: {};
   };
   "/api/schedule/check": {
@@ -71,6 +86,9 @@ type Pages = {
   "/app": {
     params: {};
   };
+  "/app/billing/confirm": {
+    params: {};
+  };
   "/app/bars/:id/edit": {
     params: {
       "id": string;
@@ -88,6 +106,9 @@ type Pages = {
   "/app/settings": {
     params: {};
   };
+  "/app/pricing": {
+    params: {};
+  };
   "/app/new": {
     params: {};
   };
@@ -96,7 +117,7 @@ type Pages = {
 type RouteFiles = {
   "root.jsx": {
     id: "root";
-    page: "/" | "/apps/countdown/analytics/track-click" | "/apps/countdown/analytics/track-view" | "/api/bars/:barId/schedule-status" | "/apps/countdown/email-submit" | "/webhooks/app/scopes_update" | "/api/analytics/track-click" | "/api/analytics/track-view" | "/webhooks/app/uninstalled" | "/api/storefront/settings" | "/apps/countdown/settings" | "/api/analytics/data" | "/api/schedule/check" | "/api/bars/active" | "/api/geo/detect" | "/api/settings" | "/auth/login" | "/auth/*" | "/app" | "/app/bars/:id/edit" | "/app/additional" | "/app/analytics" | "/app/templates" | "/app/settings" | "/app/new";
+    page: "/" | "/apps/countdown/analytics/track-click" | "/apps/countdown/analytics/track-view" | "/webhooks/app/subscriptions_update" | "/api/bars/:barId/schedule-status" | "/apps/countdown/email-submit" | "/webhooks/app/scopes_update" | "/api/analytics/track-click" | "/api/analytics/track-view" | "/webhooks/app/uninstalled" | "/api/storefront/settings" | "/apps/countdown/settings" | "/api/cron/reset-views" | "/api/billing/history" | "/api/analytics/data" | "/api/billing/create" | "/api/billing/status" | "/api/schedule/check" | "/api/bars/active" | "/api/geo/detect" | "/api/settings" | "/auth/login" | "/auth/*" | "/app" | "/app/billing/confirm" | "/app/bars/:id/edit" | "/app/additional" | "/app/analytics" | "/app/templates" | "/app/settings" | "/app/pricing" | "/app/new";
   };
   "routes/apps.countdown.analytics.track-click.jsx": {
     id: "routes/apps.countdown.analytics.track-click";
@@ -105,6 +126,10 @@ type RouteFiles = {
   "routes/apps.countdown.analytics.track-view.jsx": {
     id: "routes/apps.countdown.analytics.track-view";
     page: "/apps/countdown/analytics/track-view";
+  };
+  "routes/webhooks.app.subscriptions_update.jsx": {
+    id: "routes/webhooks.app.subscriptions_update";
+    page: "/webhooks/app/subscriptions_update";
   };
   "routes/api.bars.$barId.schedule-status.jsx": {
     id: "routes/api.bars.$barId.schedule-status";
@@ -138,9 +163,25 @@ type RouteFiles = {
     id: "routes/apps.countdown.settings";
     page: "/apps/countdown/settings";
   };
+  "routes/api.cron.reset-views.jsx": {
+    id: "routes/api.cron.reset-views";
+    page: "/api/cron/reset-views";
+  };
+  "routes/api.billing.history.jsx": {
+    id: "routes/api.billing.history";
+    page: "/api/billing/history";
+  };
   "routes/api.analytics.data.jsx": {
     id: "routes/api.analytics.data";
     page: "/api/analytics/data";
+  };
+  "routes/api.billing.create.jsx": {
+    id: "routes/api.billing.create";
+    page: "/api/billing/create";
+  };
+  "routes/api.billing.status.jsx": {
+    id: "routes/api.billing.status";
+    page: "/api/billing/status";
   };
   "routes/api.schedule.check.jsx": {
     id: "routes/api.schedule.check";
@@ -162,17 +203,21 @@ type RouteFiles = {
     id: "routes/auth.login";
     page: "/auth/login";
   };
-  "routes/auth.$.jsx": {
-    id: "routes/auth.$";
-    page: "/auth/*";
-  };
   "routes/_index/route.jsx": {
     id: "routes/_index";
     page: "/";
   };
+  "routes/auth.$.jsx": {
+    id: "routes/auth.$";
+    page: "/auth/*";
+  };
   "routes/app.jsx": {
     id: "routes/app";
-    page: "/app" | "/app/bars/:id/edit" | "/app/additional" | "/app/analytics" | "/app/templates" | "/app/settings" | "/app/new";
+    page: "/app" | "/app/billing/confirm" | "/app/bars/:id/edit" | "/app/additional" | "/app/analytics" | "/app/templates" | "/app/settings" | "/app/pricing" | "/app/new";
+  };
+  "routes/app.billing.confirm.jsx": {
+    id: "routes/app.billing.confirm";
+    page: "/app/billing/confirm";
   };
   "routes/app.bars.$id.edit.jsx": {
     id: "routes/app.bars.$id.edit";
@@ -193,6 +238,10 @@ type RouteFiles = {
   "routes/app.settings.jsx": {
     id: "routes/app.settings";
     page: "/app/settings";
+  };
+  "routes/app.pricing.jsx": {
+    id: "routes/app.pricing";
+    page: "/app/pricing";
   };
   "routes/app._index.jsx": {
     id: "routes/app._index";
