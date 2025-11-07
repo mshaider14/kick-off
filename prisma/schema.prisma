@@ -177,3 +177,59 @@ model EmailSubmission {
   @@index([timestamp])
   @@index([shop, timestamp])
 }
+
+model Merchant {
+  id                String   @id @default(cuid())
+  shop              String   @unique
+  planName          String   @default("free") // "free", "starter", "pro", "scale"
+  planPrice         Float    @default(0)
+  billingCycle      String?  // "monthly", "annual"
+  chargeId          String?  // Shopify recurring charge ID
+  chargeStatus      String?  // "pending", "active", "declined", "cancelled"
+  billingActivated  Boolean  @default(false)
+  trialEndsAt       DateTime?
+  currentPeriodEnd  DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  viewUsage         ViewUsage[]
+  billingHistory    BillingHistory[]
+  
+  @@index([shop])
+  @@index([planName])
+}
+
+model ViewUsage {
+  id             String   @id @default(cuid())
+  shop           String
+  merchant       Merchant @relation(fields: [shop], references: [shop], onDelete: Cascade)
+  month          String   // Format: "YYYY-MM"
+  viewCount      Int      @default(0)
+  lastResetAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@unique([shop, month])
+  @@index([shop])
+  @@index([month])
+  @@index([shop, month])
+}
+
+model BillingHistory {
+  id              String   @id @default(cuid())
+  shop            String
+  merchant        Merchant @relation(fields: [shop], references: [shop], onDelete: Cascade)
+  chargeId        String
+  planName        String
+  amount          Float
+  status          String   // "pending", "accepted", "declined", "cancelled"
+  billingOn       DateTime?
+  activatedOn     DateTime?
+  cancelledOn     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([shop])
+  @@index([chargeId])
+  @@index([shop, createdAt])
+}
