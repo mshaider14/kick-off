@@ -49,7 +49,12 @@ export const action = async ({ request }) => {
     }
 
     // Create recurring charge for paid plans
-    const appUrl = process.env.SHOPIFY_APP_URL || "";
+    const appUrl = process.env.SHOPIFY_APP_URL;
+    
+    if (!appUrl) {
+      throw new Error("SHOPIFY_APP_URL environment variable is not configured");
+    }
+    
     const returnUrl = `${appUrl}/app/billing/confirm?planName=${planName}`;
 
     const charge = await createRecurringCharge(admin, shop, planName, returnUrl);

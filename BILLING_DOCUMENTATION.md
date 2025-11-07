@@ -224,11 +224,28 @@ Updates merchant record and billing history accordingly.
 
 ## Environment Variables
 
-Add to your `.env` file:
+**Required:**
 
 ```env
-# Optional: Secure the cron endpoint
-CRON_SECRET_TOKEN=your-random-secret-token
+# Shopify App Configuration
+SHOPIFY_APP_URL=https://your-app-domain.vercel.app
+
+# Cron Job Security (REQUIRED for production)
+CRON_SECRET_TOKEN=your-random-secret-token-min-32-chars
+```
+
+The `CRON_SECRET_TOKEN` is required to secure the monthly reset endpoint. Generate a secure random token:
+
+```bash
+# Generate a secure token
+openssl rand -base64 32
+```
+
+**Optional:**
+
+```env
+# Use production billing (default: test mode in development)
+NODE_ENV=production
 ```
 
 ## Testing Checklist
@@ -247,11 +264,13 @@ CRON_SECRET_TOKEN=your-random-secret-token
 
 ## Security Considerations
 
-1. **CRON Endpoint**: The `/api/cron/reset-views` endpoint should be secured with a bearer token to prevent unauthorized access.
+1. **CRON Endpoint**: The `/api/cron/reset-views` endpoint MUST be secured with a bearer token. The `CRON_SECRET_TOKEN` environment variable is required. The endpoint will return a 500 error if this is not configured.
 
-2. **Shopify Billing**: All charges are created with `test: true` in development. Remove this for production.
+2. **Shopify Billing**: Charges are created in test mode during development (`NODE_ENV !== 'production'`). In production, real charges will be created.
 
-3. **View Limit**: Enforced server-side to prevent bypassing.
+3. **View Limit**: Enforced server-side to prevent bypassing. The API returns a 429 error when limits are exceeded, without exposing sensitive merchant information.
+
+4. **SHOPIFY_APP_URL**: This environment variable is required for proper billing redirect URLs. The app will throw an error if it's not configured.
 
 ## Future Enhancements
 

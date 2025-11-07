@@ -8,7 +8,7 @@ function json(data, init) {
  * This endpoint should be called by a cron job (e.g., Vercel Cron Jobs)
  * at the start of each month to reset view counts
  * 
- * To secure this endpoint, you should add an authorization token check
+ * IMPORTANT: Set CRON_SECRET_TOKEN environment variable to secure this endpoint
  * Example: Authorization: Bearer YOUR_CRON_SECRET_TOKEN
  */
 export const action = async ({ request }) => {
@@ -17,7 +17,13 @@ export const action = async ({ request }) => {
     const authHeader = request.headers.get("Authorization");
     const cronSecret = process.env.CRON_SECRET_TOKEN;
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret) {
+      console.error("CRON_SECRET_TOKEN is not configured - endpoint is unprotected!");
+      return json({ error: "Server configuration error" }, { status: 500 });
+    }
+
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      console.error("Unauthorized cron job access attempt");
       return json({ error: "Unauthorized" }, { status: 401 });
     }
 

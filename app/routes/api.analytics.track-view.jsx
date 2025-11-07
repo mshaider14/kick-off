@@ -66,10 +66,8 @@ export const action = async ({ request }) => {
     // Check if limit is reached
     if (hasReachedViewLimit(viewUsage.viewCount, merchant.planName)) {
       return json({ 
-        error: "View limit reached",
+        error: "View limit reached for your current plan",
         limitReached: true,
-        planName: merchant.planName,
-        viewCount: viewUsage.viewCount
       }, { 
         status: 429,
         headers: {

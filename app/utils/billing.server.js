@@ -15,14 +15,17 @@ export async function createRecurringCharge(admin, shop, planName, returnUrl) {
     throw new Error("Cannot create charge for free plan");
   }
 
+  // Use test mode in development, production mode in production
+  const isTestMode = process.env.NODE_ENV !== 'production';
+
   const response = await admin.graphql(
     `#graphql
-      mutation AppSubscriptionCreate($name: String!, $returnUrl: URL!, $lineItems: [AppSubscriptionLineItemInput!]!) {
+      mutation AppSubscriptionCreate($name: String!, $returnUrl: URL!, $lineItems: [AppSubscriptionLineItemInput!]!, $test: Boolean) {
         appSubscriptionCreate(
           name: $name
           returnUrl: $returnUrl
           lineItems: $lineItems
-          test: true
+          test: $test
         ) {
           appSubscription {
             id
@@ -40,6 +43,7 @@ export async function createRecurringCharge(admin, shop, planName, returnUrl) {
       variables: {
         name: `${plan.name} Plan`,
         returnUrl: returnUrl,
+        test: isTestMode,
         lineItems: [
           {
             plan: {
